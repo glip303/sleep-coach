@@ -9,1081 +9,198 @@
 <title>Sleep Coach</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&family=DM+Mono:wght@300;400&display=swap');
-
-  :root {
-    --bg: #0a0e17;
-    --surface: #131926;
-    --surface-raised: #1a2235;
-    --surface-bright: #222d42;
-    --text: #e8ecf4;
-    --text-dim: #8694ad;
-    --text-faint: #4a5672;
-    --green: #34d399;
-    --green-dim: #065f46;
-    --amber: #fbbf24;
-    --amber-dim: #78350f;
-    --red: #f87171;
-    --red-dim: #7f1d1d;
-    --blue: #60a5fa;
-    --blue-dim: #1e3a5f;
-    --purple: #a78bfa;
-    --radius: 16px;
-    --radius-sm: 10px;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100dvh;
-    overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  /* ===== SETUP SCREEN ===== */
-  #setup-screen {
-    min-height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-  }
-
-  #setup-screen h1 {
-    font-size: 28px;
-    font-weight: 700;
-    margin-bottom: 8px;
-    letter-spacing: -0.5px;
-  }
-
-  #setup-screen p {
-    color: var(--text-dim);
-    margin-bottom: 32px;
-    font-size: 15px;
-  }
-
-  .setup-form {
-    width: 100%;
-    max-width: 400px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .setup-form label {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: -8px;
-  }
-
-  .setup-form input {
-    background: var(--surface);
-    border: 1px solid var(--surface-bright);
-    border-radius: var(--radius-sm);
-    padding: 14px 16px;
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    font-size: 15px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  .setup-form input:focus { border-color: var(--blue); }
-  .setup-form input::placeholder { color: var(--text-faint); }
-
-  .setup-hint {
-    font-size: 12px;
-    color: var(--text-faint);
-    margin-top: -10px;
-    line-height: 1.4;
-  }
-
-  .btn {
-    background: var(--blue);
-    color: var(--bg);
-    border: none;
-    border-radius: var(--radius-sm);
-    padding: 14px 24px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s;
-    letter-spacing: -0.2px;
-  }
-
-  .btn:active { transform: scale(0.97); opacity: 0.9; }
-  .btn-large { padding: 18px 32px; font-size: 18px; border-radius: var(--radius); }
-  .btn-secondary { background: var(--surface-bright); color: var(--text); }
-  .btn-green { background: var(--green); }
-  .btn-amber { background: var(--amber); color: var(--bg); }
-  .btn-red { background: var(--red); color: var(--bg); }
-
-  .error-text {
-    color: var(--red);
-    font-size: 14px;
-    text-align: center;
-    min-height: 20px;
-  }
-
-  /* ===== MAIN DASHBOARD ===== */
-  #dashboard {
-    display: none;
-    min-height: 100dvh;
-    padding: 16px 16px 100px;
-    max-width: 500px;
-    margin: 0 auto;
-  }
-
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0 20px;
-  }
-
-  .header h2 { font-size: 20px; font-weight: 600; letter-spacing: -0.3px; }
-
-  .header-time {
-    font-family: 'DM Mono', monospace;
-    font-size: 14px;
-    color: var(--text-dim);
-  }
-
-  .settings-btn {
-    background: var(--surface);
-    border: none;
-    color: var(--text-dim);
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 18px;
-    display: flex; align-items: center; justify-content: center;
-  }
-
-  /* ===== WAKE WINDOW HERO ===== */
-  .wake-hero {
-    background: var(--surface);
-    border-radius: var(--radius);
-    padding: 28px 24px;
-    margin-bottom: 16px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .wake-hero::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: var(--green);
-    transition: background 0.5s;
-  }
-
-  .wake-hero.amber::before { background: var(--amber); }
-  .wake-hero.red::before { background: var(--red); }
-
-  .wake-label {
-    font-size: 13px; font-weight: 500;
-    color: var(--text-dim);
-    text-transform: uppercase; letter-spacing: 0.5px;
-    margin-bottom: 8px;
-  }
-
-  .wake-time {
-    font-family: 'DM Mono', monospace;
-    font-size: 52px; font-weight: 400;
-    letter-spacing: -2px; line-height: 1;
-    margin-bottom: 12px;
-    transition: color 0.5s;
-  }
-
-  .wake-hero.amber .wake-time { color: var(--amber); }
-  .wake-hero.red .wake-time { color: var(--red); }
-
-  .wake-bar-track {
-    width: 100%; height: 6px;
-    background: var(--surface-bright);
-    border-radius: 3px;
-    overflow: hidden;
-    margin-bottom: 10px;
-  }
-
-  .wake-bar-fill {
-    height: 100%;
-    background: var(--green);
-    border-radius: 3px;
-    transition: width 1s linear, background 0.5s;
-    width: 0%;
-  }
-
-  .wake-hero.amber .wake-bar-fill { background: var(--amber); }
-  .wake-hero.red .wake-bar-fill { background: var(--red); }
-
-  .wake-target { font-size: 13px; color: var(--text-dim); }
-  .wake-target strong { color: var(--text); font-weight: 500; }
-
-  /* ===== STATUS CARDS ===== */
-  .status-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 16px;
-  }
-
-  .status-card {
-    background: var(--surface);
-    border-radius: var(--radius-sm);
-    padding: 16px;
-  }
-
-  .status-card .label {
-    font-size: 12px; color: var(--text-dim);
-    text-transform: uppercase; letter-spacing: 0.4px;
-    margin-bottom: 6px;
-  }
-
-  .status-card .value {
-    font-family: 'DM Mono', monospace;
-    font-size: 22px; font-weight: 400;
-  }
-
-  .status-card .sub { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
-
-  /* ===== GUIDANCE PANEL ===== */
-  .guidance {
-    background: var(--surface);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 16px;
-    border-left: 3px solid var(--blue);
-  }
-
-  .guidance.urgent {
-    border-left-color: var(--red);
-    background: linear-gradient(135deg, var(--red-dim), var(--surface));
-  }
-
-  .guidance.warning {
-    border-left-color: var(--amber);
-    background: linear-gradient(135deg, var(--amber-dim), var(--surface));
-  }
-
-  .guidance.positive {
-    border-left-color: var(--green);
-    background: linear-gradient(135deg, var(--green-dim), var(--surface));
-  }
-
-  .guidance-title {
-    font-size: 15px; font-weight: 600;
-    margin-bottom: 8px;
-    display: flex; align-items: center; gap: 8px;
-  }
-
-  .guidance-text {
-    font-size: 14px; line-height: 1.6;
-    color: var(--text-dim);
-  }
-
-  .guidance-text strong { color: var(--text); font-weight: 500; }
-
-  /* ===== TEMPERAMENT SELECTOR ===== */
-  .temperament-section { margin-bottom: 16px; }
-
-  .section-title {
-    font-size: 13px; font-weight: 500;
-    color: var(--text-dim);
-    text-transform: uppercase; letter-spacing: 0.5px;
-    margin-bottom: 10px;
-  }
-
-  .temperament-options {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-
-  .temp-btn {
-    background: var(--surface);
-    border: 1px solid var(--surface-bright);
-    border-radius: var(--radius-sm);
-    padding: 14px 12px;
-    color: var(--text-dim);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px; font-weight: 500;
-    cursor: pointer;
-    transition: all 0.15s;
-    text-align: center;
-  }
-
-  .temp-btn:active { transform: scale(0.97); }
-
-  .temp-btn.selected {
-    border-color: var(--blue);
-    color: var(--text);
-    background: var(--blue-dim);
-  }
-
-  .temp-btn .emoji { display: block; font-size: 24px; margin-bottom: 4px; }
-
-  /* ===== TIMELINE ===== */
-  .timeline-section { margin-bottom: 16px; }
-
-  .timeline { display: flex; flex-direction: column; gap: 6px; }
-
-  .timeline-item {
-    display: flex; align-items: center; gap: 12px;
-    padding: 10px 14px;
-    background: var(--surface);
-    border-radius: var(--radius-sm);
-    font-size: 14px;
-  }
-
-  .timeline-item .time {
-    font-family: 'DM Mono', monospace;
-    font-size: 13px; color: var(--text-dim);
-    min-width: 48px;
-  }
-
-  .timeline-item .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-  .dot-sleep { background: var(--purple); }
-  .dot-feed { background: var(--blue); }
-
-  .timeline-item .desc { flex: 1; color: var(--text-dim); }
-
-  .timeline-item .dur {
-    font-family: 'DM Mono', monospace;
-    font-size: 12px; color: var(--text-faint);
-  }
-
-  /* ===== DAILY STATS ===== */
-  .daily-stats {
-    background: var(--surface);
-    border-radius: var(--radius);
-    padding: 16px 20px;
-    margin-bottom: 16px;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 12px;
-    text-align: center;
-  }
-
-  .daily-stat .val { font-family: 'DM Mono', monospace; font-size: 20px; font-weight: 400; }
-
-  .daily-stat .lbl {
-    font-size: 11px; color: var(--text-dim);
-    text-transform: uppercase; letter-spacing: 0.3px; margin-top: 2px;
-  }
-
-  /* ===== REFRESH BAR ===== */
-  .refresh-bar {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    background: var(--surface);
-    border-top: 1px solid var(--surface-bright);
-    padding: 12px 16px env(safe-area-inset-bottom, 0);
-    display: flex; justify-content: center; gap: 12px;
-    z-index: 100;
-  }
-
-  .refresh-bar .btn { flex: 1; max-width: 240px; }
-
-  .last-refresh {
-    font-size: 11px; color: var(--text-faint);
-    text-align: center; margin-top: 4px;
-  }
-
-  /* ===== LOADING ===== */
-  .loading {
-    display: flex; align-items: center; justify-content: center;
-    gap: 8px; padding: 40px;
-    color: var(--text-dim); font-size: 15px;
-  }
-
-  .spinner {
-    width: 20px; height: 20px;
-    border: 2px solid var(--surface-bright);
-    border-top-color: var(--blue);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* ===== ASLEEP OVERLAY ===== */
-  .asleep-overlay {
-    display: none;
-    position: fixed; inset: 0;
-    background: rgba(5, 8, 15, 0.97);
-    z-index: 200;
-    flex-direction: column;
-    align-items: center; justify-content: center;
-    padding: 32px;
-    text-align: center;
-  }
-
-  .asleep-overlay.show { display: flex; }
-
-  .asleep-overlay .moon {
-    font-size: 64px; margin-bottom: 20px;
-    animation: float 3s ease-in-out infinite;
-  }
-
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-  }
-
-  .asleep-overlay h2 { font-size: 24px; font-weight: 600; margin-bottom: 8px; }
-
-  .asleep-overlay .asleep-dur {
-    font-family: 'DM Mono', monospace;
-    font-size: 40px; color: var(--purple); margin: 16px 0;
-  }
-
-  .asleep-overlay p {
-    color: var(--text-dim); font-size: 15px;
-    line-height: 1.5; max-width: 300px;
-  }
-
-  .asleep-overlay .btn { margin-top: 24px; }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .fade-in { animation: fadeIn 0.3s ease-out; }
-
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--surface-bright); border-radius: 2px; }
+  :root{--bg:#0a0e17;--surface:#131926;--surface-raised:#1a2235;--surface-bright:#222d42;--text:#e8ecf4;--text-dim:#8694ad;--text-faint:#4a5672;--green:#34d399;--green-dim:#065f46;--amber:#fbbf24;--amber-dim:#78350f;--red:#f87171;--red-dim:#7f1d1d;--blue:#60a5fa;--blue-dim:#1e3a5f;--purple:#a78bfa;--radius:16px;--radius-sm:10px}
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+  #setup-screen{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+  #setup-screen h1{font-size:28px;font-weight:700;margin-bottom:8px;letter-spacing:-0.5px}
+  #setup-screen p{color:var(--text-dim);margin-bottom:32px;font-size:15px}
+  .setup-form{width:100%;max-width:400px;display:flex;flex-direction:column;gap:16px}
+  .setup-form label{font-size:13px;font-weight:500;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:-8px}
+  .setup-form input{background:var(--surface);border:1px solid var(--surface-bright);border-radius:var(--radius-sm);padding:14px 16px;color:var(--text);font-family:'DM Mono',monospace;font-size:15px;outline:none;transition:border-color 0.2s}
+  .setup-form input:focus{border-color:var(--blue)}.setup-form input::placeholder{color:var(--text-faint)}
+  .setup-hint{font-size:12px;color:var(--text-faint);margin-top:-10px;line-height:1.4}
+  .btn{background:var(--blue);color:var(--bg);border:none;border-radius:var(--radius-sm);padding:14px 24px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.15s;letter-spacing:-0.2px}
+  .btn:active{transform:scale(0.97);opacity:0.9}.btn-large{padding:18px 32px;font-size:18px;border-radius:var(--radius)}
+  .btn-secondary{background:var(--surface-bright);color:var(--text)}.error-text{color:var(--red);font-size:14px;text-align:center;min-height:20px}
+  #dashboard{display:none;min-height:100dvh;padding:16px 16px 100px;max-width:500px;margin:0 auto}
+  .header{display:flex;justify-content:space-between;align-items:center;padding:8px 0 20px}
+  .header h2{font-size:20px;font-weight:600;letter-spacing:-0.3px}
+  .header-time{font-family:'DM Mono',monospace;font-size:14px;color:var(--text-dim)}
+  .settings-btn{background:var(--surface);border:none;color:var(--text-dim);width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center}
+  .wake-hero{background:var(--surface);border-radius:var(--radius);padding:28px 24px;margin-bottom:16px;position:relative;overflow:hidden}
+  .wake-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--green);transition:background 0.5s}
+  .wake-hero.amber::before{background:var(--amber)}.wake-hero.red::before{background:var(--red)}
+  .wake-label{font-size:13px;font-weight:500;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+  .wake-time{font-family:'DM Mono',monospace;font-size:52px;font-weight:400;letter-spacing:-2px;line-height:1;margin-bottom:12px;transition:color 0.5s}
+  .wake-hero.amber .wake-time{color:var(--amber)}.wake-hero.red .wake-time{color:var(--red)}
+  .wake-bar-track{width:100%;height:6px;background:var(--surface-bright);border-radius:3px;overflow:hidden;margin-bottom:10px}
+  .wake-bar-fill{height:100%;background:var(--green);border-radius:3px;transition:width 1s linear,background 0.5s}
+  .wake-hero.amber .wake-bar-fill{background:var(--amber)}.wake-hero.red .wake-bar-fill{background:var(--red)}
+  .wake-target{font-size:13px;color:var(--text-dim)}.wake-target strong{color:var(--text);font-weight:500}
+  .status-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+  .status-card{background:var(--surface);border-radius:var(--radius-sm);padding:16px}
+  .status-card .label{font-size:12px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px}
+  .status-card .value{font-family:'DM Mono',monospace;font-size:22px}
+  .status-card .sub{font-size:12px;color:var(--text-dim);margin-top:4px}
+  .guidance{background:var(--surface);border-radius:var(--radius);padding:20px;margin-bottom:16px;border-left:3px solid var(--blue)}
+  .guidance.urgent{border-left-color:var(--red);background:linear-gradient(135deg,var(--red-dim),var(--surface))}
+  .guidance.warning{border-left-color:var(--amber);background:linear-gradient(135deg,var(--amber-dim),var(--surface))}
+  .guidance.positive{border-left-color:var(--green);background:linear-gradient(135deg,var(--green-dim),var(--surface))}
+  .guidance-title{font-size:15px;font-weight:600;margin-bottom:8px}
+  .guidance-text{font-size:14px;line-height:1.6;color:var(--text-dim)}.guidance-text strong{color:var(--text);font-weight:500}
+  .temperament-section{margin-bottom:16px}
+  .section-title{font-size:13px;font-weight:500;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px}
+  .temperament-options{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .temp-btn{background:var(--surface);border:1px solid var(--surface-bright);border-radius:var(--radius-sm);padding:14px 12px;color:var(--text-dim);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.15s;text-align:center}
+  .temp-btn:active{transform:scale(0.97)}
+  .temp-btn.selected{border-color:var(--blue);color:var(--text);background:var(--blue-dim)}
+  .temp-btn .emoji{display:block;font-size:24px;margin-bottom:4px}
+  .timeline-section{margin-bottom:16px}.timeline{display:flex;flex-direction:column;gap:6px}
+  .timeline-item{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface);border-radius:var(--radius-sm);font-size:14px}
+  .timeline-item .time{font-family:'DM Mono',monospace;font-size:13px;color:var(--text-dim);min-width:48px}
+  .timeline-item .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  .dot-sleep{background:var(--purple)}.dot-feed{background:var(--blue)}
+  .timeline-item .desc{flex:1;color:var(--text-dim)}
+  .timeline-item .dur{font-family:'DM Mono',monospace;font-size:12px;color:var(--text-faint)}
+  .daily-stats{background:var(--surface);border-radius:var(--radius);padding:16px 20px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;text-align:center}
+  .daily-stat .val{font-family:'DM Mono',monospace;font-size:20px}
+  .daily-stat .lbl{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.3px;margin-top:2px}
+  .bottom-bar{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--surface-bright);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0));display:flex;justify-content:center;gap:10px;z-index:100}
+  .bottom-bar .btn{flex:1;max-width:180px;padding:12px 16px;font-size:15px}.btn-chat{background:var(--purple)}
+  .last-refresh{font-size:11px;color:var(--text-faint);text-align:center;margin-top:4px}
+  .loading{display:flex;align-items:center;justify-content:center;gap:8px;padding:40px;color:var(--text-dim)}
+  .spinner{width:20px;height:20px;border:2px solid var(--surface-bright);border-top-color:var(--blue);border-radius:50%;animation:spin 0.8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .asleep-overlay{display:none;position:fixed;inset:0;background:rgba(5,8,15,0.97);z-index:200;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center}
+  .asleep-overlay.show{display:flex}
+  .asleep-overlay .moon{font-size:64px;margin-bottom:20px;animation:float 3s ease-in-out infinite}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  .asleep-overlay h2{font-size:24px;font-weight:600;margin-bottom:8px}
+  .asleep-overlay .asleep-dur{font-family:'DM Mono',monospace;font-size:40px;color:var(--purple);margin:16px 0}
+  .asleep-overlay p{color:var(--text-dim);font-size:15px;line-height:1.5;max-width:300px}
+  .asleep-overlay .btn{margin-top:24px}
+  .chat-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;opacity:0;transition:opacity 0.3s}
+  .chat-backdrop.show{display:block;opacity:1}
+  .chat-sheet{position:fixed;bottom:0;left:0;right:0;background:var(--bg);z-index:301;border-radius:20px 20px 0 0;max-height:85dvh;height:85dvh;transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);display:flex;flex-direction:column}
+  .chat-sheet.show{transform:translateY(0)}
+  .chat-handle{display:flex;justify-content:center;padding:12px 0 4px}
+  .chat-handle-bar{width:36px;height:4px;background:var(--surface-bright);border-radius:2px}
+  .chat-header{display:flex;justify-content:space-between;align-items:center;padding:4px 20px 12px;border-bottom:1px solid var(--surface-bright)}
+  .chat-header h3{font-size:16px;font-weight:600}
+  .chat-close{background:none;border:none;color:var(--text-dim);font-size:24px;cursor:pointer;padding:4px 8px}
+  .chat-messages{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth}
+  .chat-msg{max-width:85%;padding:12px 16px;border-radius:16px;font-size:14px;line-height:1.5;word-wrap:break-word}
+  .chat-msg.user{align-self:flex-end;background:var(--blue-dim);color:var(--text);border-bottom-right-radius:4px}
+  .chat-msg.assistant{align-self:flex-start;background:var(--surface);color:var(--text-dim);border-bottom-left-radius:4px}
+  .chat-msg.assistant strong{color:var(--text);font-weight:500}
+  .chat-msg.system{align-self:center;background:none;color:var(--text-faint);font-size:12px;text-align:center;padding:4px}
+  .chat-typing{align-self:flex-start;padding:12px 20px;color:var(--text-faint);font-size:13px;font-style:italic}
+  .chat-input-row{display:flex;gap:8px;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0));border-top:1px solid var(--surface-bright);background:var(--surface)}
+  .chat-input{flex:1;background:var(--surface-bright);border:none;border-radius:20px;padding:12px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;outline:none;resize:none;max-height:100px}
+  .chat-input::placeholder{color:var(--text-faint)}
+  .chat-send{background:var(--purple);border:none;border-radius:50%;width:44px;height:44px;color:white;font-size:20px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:opacity 0.15s}
+  .chat-send:disabled{opacity:0.3;cursor:default}
+  ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--surface-bright);border-radius:2px}
 </style>
 </head>
 <body>
-
-<!-- SETUP SCREEN -->
 <div id="setup-screen">
-  <h1>Sleep Coach</h1>
-  <p>Connect to BabyBuddy</p>
+  <h1>Sleep Coach</h1><p>Connect to BabyBuddy</p>
   <div class="setup-form">
-    <label>BabyBuddy URL</label>
-    <input type="url" id="input-url" placeholder="https://henry.lipington.com" autocomplete="url" />
-    <div class="setup-hint">Your BabyBuddy address (no trailing slash)</div>
-    <label>API Token</label>
-    <input type="text" id="input-token" placeholder="abc123def456..." autocomplete="off" />
-    <div class="setup-hint">Find this in BabyBuddy → User Settings → API Key</div>
+    <label>BabyBuddy URL</label><input type="url" id="input-url" placeholder="https://henry.lipington.com" autocomplete="url"/>
+    <label>API Token</label><input type="text" id="input-token" placeholder="abc123def456..." autocomplete="off"/>
+    <div class="setup-hint">BabyBuddy → User Settings → API Key</div>
+    <label>Claude API Key <span style="font-weight:300;text-transform:none">(optional — enables chat)</span></label>
+    <input type="password" id="input-claude" placeholder="sk-ant-..." autocomplete="off"/>
+    <div class="setup-hint">console.anthropic.com → API Keys</div>
     <div class="error-text" id="setup-error"></div>
     <button class="btn btn-large" onclick="connectAPI()">Connect</button>
   </div>
 </div>
-
-<!-- MAIN DASHBOARD -->
 <div id="dashboard">
-  <div class="header">
-    <h2>Sleep Coach</h2>
-    <div style="display:flex;align-items:center;gap:10px;">
-      <span class="header-time" id="clock"></span>
-      <button class="settings-btn" onclick="showSetup()" title="Settings">⚙</button>
-    </div>
-  </div>
-
-  <div id="main-content">
-    <div class="loading"><div class="spinner"></div> Loading data...</div>
-  </div>
-
-  <div class="refresh-bar">
-    <button class="btn btn-secondary" onclick="refreshData()">↻ Refresh</button>
-  </div>
+  <div class="header"><h2>Sleep Coach</h2><div style="display:flex;align-items:center;gap:10px"><span class="header-time" id="clock"></span><button class="settings-btn" onclick="showSetup()">⚙</button></div></div>
+  <div id="wake-hero-container"></div><div id="status-cards-container"></div><div id="temperament-container"></div>
+  <div id="guidance-container"></div><div id="daily-stats-container"></div><div id="timeline-container"></div><div id="last-refresh-container"></div>
+  <div class="bottom-bar"><button class="btn btn-secondary" onclick="refreshData()">↻ Refresh</button><button class="btn btn-chat" id="chat-btn" onclick="openChat()" style="display:none">💬 Ask coach</button></div>
 </div>
-
-<!-- ASLEEP OVERLAY -->
-<div class="asleep-overlay" id="asleep-overlay">
-  <div class="moon">🌙</div>
-  <h2>He's asleep</h2>
-  <div class="asleep-dur" id="asleep-duration">00:00</div>
-  <p id="asleep-message">Don't touch anything. Breathe.</p>
-  <button class="btn btn-secondary" onclick="dismissOverlay()">View dashboard</button>
+<div class="asleep-overlay" id="asleep-overlay"><div class="moon">🌙</div><h2>He's asleep</h2><div class="asleep-dur" id="asleep-duration">00:00</div><p id="asleep-message"></p><button class="btn btn-secondary" onclick="dismissOverlay()">View dashboard</button></div>
+<div class="chat-backdrop" id="chat-backdrop" onclick="closeChat()"></div>
+<div class="chat-sheet" id="chat-sheet">
+  <div class="chat-handle"><div class="chat-handle-bar"></div></div>
+  <div class="chat-header"><h3>Sleep Consultant</h3><button class="chat-close" onclick="closeChat()">×</button></div>
+  <div class="chat-messages" id="chat-messages"><div class="chat-msg system">Ask me anything about sleep. I can see today's data and know the plan.</div></div>
+  <div class="chat-input-row"><textarea class="chat-input" id="chat-input" placeholder="Ask about sleep, naps, routine..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"></textarea><button class="chat-send" id="chat-send" onclick="sendChat()">↑</button></div>
 </div>
-
 <script>
-// ===== CONFIG =====
-const PLAN = {
-  WAKE_WINDOW_FIRST: 70,
-  WAKE_WINDOW_DAY: 85,
-  WAKE_WINDOW_EVENING: 90,
-  WAKE_WINDOW_HARD_MAX: 100,
-  AMBER_PERCENT: 0.75,
-  RED_PERCENT: 0.90,
-  EVENING_START_HOUR: 16,
-  BEDTIME_LATEST: 20,
-  NAP_PROTECT_START: 14,
-  NAP_PROTECT_END: 17,
-  FEED_INTERVAL: 150,
-  NIGHT_FEED_MIN_GAP: 150,
-};
-
-// ===== STATE =====
-let state = {
-  url: '',
-  token: '',
-  sleeps: [],
-  feeds: [],
-  temperament: null,
-  overlayDismissed: false,
-  lastRefresh: null,
-};
-
-// ===== PERSISTENCE =====
-function saveConfig() {
-  try { localStorage.setItem('sleepcoach_config', JSON.stringify({ url: state.url, token: state.token })); } catch(e) {}
-}
-
-function loadConfig() {
-  try {
-    const raw = localStorage.getItem('sleepcoach_config');
-    if (raw) {
-      const c = JSON.parse(raw);
-      state.url = c.url || '';
-      state.token = c.token || '';
-      return state.url && state.token;
-    }
-  } catch(e) {}
-  return false;
-}
-
-// ===== API =====
-// All API calls go to the configured BabyBuddy URL (CORS must be enabled on BabyBuddy)
-async function apiFetch(path, params = {}) {
-  const base = state.url.replace(/\/+$/, '');
-  const url = new URL(path, base);
-  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
-
-  const resp = await fetch(url.toString(), {
-    headers: {
-      'Authorization': `Token ${state.token}`,
-      'Accept': 'application/json',
-    }
-  });
-
-  if (!resp.ok) {
-    if (resp.status === 403 || resp.status === 401) throw new Error('Invalid API token');
-    throw new Error(`API error: ${resp.status}`);
-  }
-  return resp.json();
-}
-
-async function fetchTodayData() {
-  const [sleepData, feedData] = await Promise.all([
-    apiFetch('/api/sleep/', { limit: 30, offset: 0, ordering: '-start' }),
-    apiFetch('/api/feedings/', { limit: 30, offset: 0, ordering: '-start' }),
-  ]);
-
-  const parseSleeps = (data) => {
-    const arr = data.results || data;
-    return arr.map(s => {
-      const start = new Date(s.start);
-      const end = new Date(s.end);
-      return {
-        start, end,
-        duration: (end - start) / 60000,
-        nap: s.nap === true || s.nap === '1' || s.nap === 1,
-        notes: s.notes || '',
-      };
-    }).sort((a, b) => b.start - a.start);
-  };
-
-  const parseFeeds = (data) => {
-    const arr = data.results || data;
-    return arr.map(f => {
-      const start = new Date(f.start);
-      const end = new Date(f.end);
-      return {
-        start, end,
-        duration: (end - start) / 60000,
-        type: f.type || '',
-        method: f.method || '',
-        amount: f.amount ? parseFloat(f.amount) : null,
-        notes: f.notes || '',
-      };
-    }).sort((a, b) => b.start - a.start);
-  };
-
-  state.sleeps = parseSleeps(sleepData);
-  state.feeds = parseFeeds(feedData);
-  state.lastRefresh = new Date();
-}
-
-// ===== ANALYSIS =====
-function get6am(now) {
-  const d = new Date(now);
-  d.setHours(6, 0, 0, 0);
-  if (now.getHours() < 6) d.setDate(d.getDate() - 1);
-  return d;
-}
-
-function getCurrentState() {
-  const now = new Date();
-  const hour = now.getHours();
-
-  const lastSleep = state.sleeps[0];
-
-  // Detect active sleep: BabyBuddy often shows duration ~0 for active timers
-  let sleeping = false;
-  let sleepStart = null;
-  if (lastSleep) {
-    const durMs = lastSleep.end - lastSleep.start;
-    if (durMs < 60000 && (now - lastSleep.start) < 8 * 3600000 && (now - lastSleep.start) > 60000) {
-      sleeping = true;
-      sleepStart = lastSleep.start;
-    }
-  }
-
-  // Wake window
-  let wakeMinutes = 0;
-  let lastSleepEnd = null;
-  if (!sleeping) {
-    // Find the most recent sleep that actually ended (duration > 1 min)
-    const completedSleeps = state.sleeps.filter(s => (s.end - s.start) > 60000);
-    const lastCompleted = completedSleeps[0];
-    if (lastCompleted) {
-      lastSleepEnd = lastCompleted.end;
-      wakeMinutes = (now - lastCompleted.end) / 60000;
-    }
-  }
-
-  // Last feed
-  const lastFeed = state.feeds[0];
-  let feedMinutes = lastFeed ? (now - lastFeed.end) / 60000 : 999;
-  if (feedMinutes < 0) feedMinutes = 0;
-
-  // Today totals
-  const today6am = get6am(now);
-  const todaySleeps = state.sleeps.filter(s => s.end > today6am && (s.end - s.start) > 60000);
-  const todayNaps = todaySleeps.filter(s => s.nap);
-  const todayNight = todaySleeps.filter(s => !s.nap);
-  const totalNapMins = todayNaps.reduce((sum, s) => sum + s.duration, 0);
-  const totalNightMins = todayNight.reduce((sum, s) => sum + s.duration, 0);
-  const napCount = todayNaps.length;
-  const feedCount = state.feeds.filter(f => f.start > today6am).length;
-
-  const isEvening = hour >= PLAN.EVENING_START_HOUR;
-
-  // Target wake window
-  let targetWakeWindow;
-  const isFirstNap = napCount === 0 && !sleeping;
-  if (isFirstNap && hour < 12) {
-    targetWakeWindow = PLAN.WAKE_WINDOW_FIRST;
-  } else if (isEvening) {
-    targetWakeWindow = PLAN.WAKE_WINDOW_EVENING;
-  } else {
-    targetWakeWindow = PLAN.WAKE_WINDOW_DAY;
-  }
-
-  const wakePercent = Math.min(wakeMinutes / targetWakeWindow, 1.5);
-  let wakeStatus = 'green';
-  if (wakePercent >= PLAN.RED_PERCENT) wakeStatus = 'red';
-  else if (wakePercent >= PLAN.AMBER_PERCENT) wakeStatus = 'amber';
-
-  const formulaToday = state.feeds.filter(f =>
-    f.start > today6am && (f.type.toLowerCase().includes('formula') || (f.method && f.method.toLowerCase().includes('bottle') && f.type.toLowerCase().includes('formula')))
-  );
-
-  return {
-    now, hour, sleeping, sleepStart, wakeMinutes, lastSleepEnd,
-    feedMinutes, lastFeed, lastSleep,
-    totalNapMins, totalNightMins, napCount, feedCount,
-    isEvening, isFirstNap, targetWakeWindow, wakePercent, wakeStatus,
-    formulaToday, todayNaps, todayNight, todaySleeps,
-  };
-}
-
-// ===== GUIDANCE ENGINE =====
-function getGuidance(cs) {
-  const guidance = [];
-  const hour = cs.hour;
-  const temp = state.temperament;
-
-  if (cs.sleeping) return guidance;
-
-  // Wake window alerts
-  if (cs.wakeStatus === 'red') {
-    guidance.push({
-      type: 'urgent',
-      title: '\u26a0 Wake window critical',
-      text: `He's been awake <strong>${formatMins(cs.wakeMinutes)}</strong> \u2014 past his ${formatMins(cs.targetWakeWindow)} target. ` +
-        (cs.isEvening
-          ? `<strong>Start the bedtime routine NOW.</strong> Sleeping bag, dim room, breast feed, formula top-up. Don't wait for more tired signs \u2014 he's already overtired.`
-          : `<strong>Get him to sleep by any means.</strong> Contact, feed to sleep, carrier \u2014 whatever works. Don't attempt the crib right now.`)
-    });
-  } else if (cs.wakeStatus === 'amber') {
-    const minsLeft = Math.max(0, Math.round(cs.targetWakeWindow - cs.wakeMinutes));
-    guidance.push({
-      type: 'warning',
-      title: '\u23f1 Nap window closing',
-      text: `<strong>${minsLeft} minutes left</strong> in his wake window. ` +
-        (cs.isEvening
-          ? `This is the bedtime window. Start the routine within the next ${minsLeft} minutes.`
-          : cs.isFirstNap
-            ? `First nap \u2014 try the <strong>crib first</strong>. If he's not settling after 10 minutes, rescue with contact.`
-            : `Start settling now. Dark room, white noise.`)
-    });
-  }
-
-  // Temperament-specific
-  if (temp === 'refusing') {
-    guidance.push({
-      type: 'warning',
-      title: '\ud83d\udd04 He\'s fighting sleep',
-      text: cs.wakeMinutes > 80
-        ? `Awake ${formatMins(cs.wakeMinutes)} and refusing to settle. <strong>20-minute rule:</strong> try for 20 minutes max, then break \u2014 calm activity, change of scene for 10\u201315 minutes. Try again with a fresh parent. Don't bounce for 2 hours.`
-        : `Still within wake window so he may not be tired enough yet. Wait until closer to the ${formatMins(cs.targetWakeWindow)} mark. Watch for yawning, eye-rubbing, staring.`
-    });
-  } else if (temp === 'inconsolable') {
-    guidance.push({
-      type: 'urgent',
-      title: '\ud83d\udc9b Stop aiming for sleep \u2014 aim for calm',
-      text: `<strong>Skin-to-skin on bare chest.</strong> Dim room, white noise. Gentle sway \u2014 no bouncing. Let him cry but contain him. Offer breast every 20 minutes, don't force it. ` +
-        (cs.isEvening && hour >= 17
-          ? `If this has been going on 30+ minutes, <strong>start bedtime routine early</strong> \u2014 sleeping bag, feed, formula. An early bedtime beats fighting until 10pm.`
-          : `Once he's calmer even briefly, that's your window to try settling.`)
-    });
-  } else if (temp === 'drowsy') {
-    guidance.push({
-      type: 'positive',
-      title: '\u2713 Good window \u2014 he\'s drowsy',
-      text: cs.isEvening
-        ? `<strong>Start bedtime routine now.</strong> Sleeping bag, breast feed, formula top-up. Hold upright 20 mins, transfer to warm mattress.`
-        : cs.isFirstNap && hour < 12
-          ? `<strong>Try the crib.</strong> Morning nap = highest sleep pressure, best crib success. Place down drowsy. If he wakes within 5 mins, pick up, calm, try once more.`
-          : hour >= PLAN.NAP_PROTECT_START && hour < PLAN.NAP_PROTECT_END
-            ? `Critical late afternoon nap. <strong>Use contact.</strong> Don't risk crib transfer. Let him sleep on you as long as possible \u2014 this protects the evening.`
-            : `Good \u2014 settle him with whatever's working today. Dark room, white noise. If he falls asleep feeding, let him stay.`
-    });
-  } else if (temp === 'calm') {
-    const minsLeft = Math.max(0, Math.round(cs.targetWakeWindow - cs.wakeMinutes));
-    guidance.push({
-      type: 'positive',
-      title: '\u2713 Calm and awake',
-      text: minsLeft > 20
-        ? `Good! <strong>${minsLeft} minutes</strong> before settling time. Low-key activity \u2014 tummy time, chat. Watch for first sleepy cues.`
-        : `Window closing soon. Start winding down \u2014 dim lights, slow stimulation. Be ready to settle within ${minsLeft} minutes.`
-    });
-  }
-
-  // Feed timing
-  if (cs.feedMinutes > PLAN.FEED_INTERVAL) {
-    guidance.push({
-      type: 'warning',
-      title: '\ud83c\udf7c Feed due',
-      text: `Last feed ended <strong>${formatMins(cs.feedMinutes)} ago</strong>. ` +
-        (cs.wakeMinutes > 60
-          ? `Offer a feed before settling \u2014 a hungry baby won't sleep.`
-          : `Offer a feed now.`)
-    });
-  }
-
-  // Evening specifics
-  if (cs.isEvening && !cs.sleeping) {
-    if (hour >= PLAN.NAP_PROTECT_START && hour < PLAN.NAP_PROTECT_END && cs.napCount < 3 && !temp) {
-      guidance.push({
-        type: 'warning',
-        title: '\ud83d\udee1 Protect the late nap',
-        text: `Only ${cs.napCount} nap${cs.napCount !== 1 ? 's' : ''} today (${formatMins(cs.totalNapMins)}). He needs a nap before 5pm or the evening will be very hard. <strong>Use contact \u2014 don't attempt crib.</strong> Even 20 minutes counts.`
-      });
-    }
-
-    if (hour >= 17 && cs.wakeMinutes > 60 && cs.lastSleepEnd) {
-      const bedtimeTarget = new Date(cs.lastSleepEnd.getTime() + PLAN.WAKE_WINDOW_EVENING * 60000);
-      if (bedtimeTarget.getHours() < PLAN.BEDTIME_LATEST + 1) {
-        guidance.push({
-          type: 'warning',
-          title: '\ud83c\udf19 Bedtime window',
-          text: `Last nap ended at <strong>${formatTime(cs.lastSleepEnd)}</strong>. Start bedtime routine by <strong>${formatTime(bedtimeTarget)}</strong>. ` +
-            (cs.formulaToday.length === 0
-              ? `Formula bottle not yet given \u2014 use as final top-up at bedtime (150\u2013180ml).`
-              : '')
-        });
-      }
-    }
-
-    if (hour >= 18 && cs.formulaToday.length === 0 && !guidance.some(g => g.text.includes('Formula'))) {
-      guidance.push({
-        type: 'warning',
-        title: '\ud83c\udf7c Formula reminder',
-        text: `Save the formula bottle (150\u2013180ml) for the <strong>last feed before the long sleep</strong>. Breast feed first, then bottle as top-up.`
-      });
-    }
-  }
-
-  // Low nap total
-  if (hour >= 14 && cs.totalNapMins < 120 && !cs.sleeping && !temp) {
-    guidance.push({
-      type: 'warning',
-      title: '\ud83d\udcca Low nap total',
-      text: `Only <strong>${formatMins(cs.totalNapMins)}</strong> nap sleep today (target: 3\u20134 hours). Prioritise getting at least one more solid nap. Contact, carrier, pram \u2014 whatever works.`
-    });
-  }
-
-  if (guidance.length === 0) {
-    guidance.push({
-      type: 'positive',
-      title: '\u2713 On track',
-      text: `Everything looks OK. Wake window at ${formatMins(cs.wakeMinutes)} of ${formatMins(cs.targetWakeWindow)} target.`
-    });
-  }
-
-  return guidance;
-}
-
-// ===== RENDER =====
-function render() {
-  const cs = getCurrentState();
-  const el = document.getElementById('main-content');
-
-  document.getElementById('clock').textContent = formatTime(cs.now);
-
-  // Asleep overlay
-  const overlay = document.getElementById('asleep-overlay');
-  if (cs.sleeping && !state.overlayDismissed) {
-    overlay.classList.add('show');
-    const dur = (cs.now - cs.sleepStart) / 60000;
-    document.getElementById('asleep-duration').textContent = formatMinsClock(dur);
-    const isNap = cs.hour >= 6 && cs.hour < 19;
-    document.getElementById('asleep-message').textContent = isNap
-      ? `Nap started at ${formatTime(cs.sleepStart)}. Don't transfer \u2014 let him sleep.`
-      : `Night sleep started at ${formatTime(cs.sleepStart)}. Rest while you can.`;
-    return;
-  } else {
-    overlay.classList.remove('show');
-    if (!cs.sleeping) state.overlayDismissed = false;
-  }
-
-  const g = getGuidance(cs);
-  let html = '';
-
-  // Wake hero
-  if (!cs.sleeping) {
-    const pct = Math.min(cs.wakePercent * 100, 100);
-    html += `
-      <div class="wake-hero ${cs.wakeStatus} fade-in">
-        <div class="wake-label">Awake for</div>
-        <div class="wake-time">${formatMinsClock(cs.wakeMinutes)}</div>
-        <div class="wake-bar-track"><div class="wake-bar-fill" style="width:${pct}%"></div></div>
-        <div class="wake-target">
-          Target: <strong>${formatMins(cs.targetWakeWindow)}</strong>
-          ${cs.isFirstNap ? ' (first nap \u2014 shorter window)' : cs.isEvening ? ' (evening max)' : ''}
-        </div>
-      </div>`;
-  }
-
-  // Status cards
-  html += `
-    <div class="status-row fade-in">
-      <div class="status-card">
-        <div class="label">Last feed</div>
-        <div class="value">${cs.lastFeed ? formatMins(cs.feedMinutes) : '--'}</div>
-        <div class="sub">${cs.lastFeed ? cs.lastFeed.type + (cs.lastFeed.amount ? ' \u00b7 ' + cs.lastFeed.amount + 'ml' : '') : 'No data'}</div>
-      </div>
-      <div class="status-card">
-        <div class="label">Last sleep</div>
-        <div class="value">${cs.lastSleep && cs.lastSleep.duration > 1 ? formatMins(cs.lastSleep.duration) : '--'}</div>
-        <div class="sub">${cs.lastSleep ? (cs.lastSleep.nap ? 'Nap' : 'Night') + (cs.lastSleep.notes ? ' \u00b7 ' + truncate(cs.lastSleep.notes, 20) : '') : ''}</div>
-      </div>
-    </div>`;
-
-  // Temperament
-  html += `
-    <div class="temperament-section fade-in">
-      <div class="section-title">How is he right now?</div>
-      <div class="temperament-options">
-        <button class="temp-btn ${state.temperament === 'calm' ? 'selected' : ''}" onclick="setTemp('calm')">
-          <span class="emoji">\ud83d\ude0a</span>Calm / alert
-        </button>
-        <button class="temp-btn ${state.temperament === 'drowsy' ? 'selected' : ''}" onclick="setTemp('drowsy')">
-          <span class="emoji">\ud83d\ude34</span>Drowsy
-        </button>
-        <button class="temp-btn ${state.temperament === 'refusing' ? 'selected' : ''}" onclick="setTemp('refusing')">
-          <span class="emoji">\ud83d\ude24</span>Fighting sleep
-        </button>
-        <button class="temp-btn ${state.temperament === 'inconsolable' ? 'selected' : ''}" onclick="setTemp('inconsolable')">
-          <span class="emoji">\ud83d\ude2d</span>Inconsolable
-        </button>
-      </div>
-    </div>`;
-
-  // Guidance
-  g.forEach(item => {
-    html += `
-      <div class="guidance ${item.type} fade-in">
-        <div class="guidance-title">${item.title}</div>
-        <div class="guidance-text">${item.text}</div>
-      </div>`;
-  });
-
-  // Daily stats
-  html += `
-    <div class="daily-stats fade-in">
-      <div class="daily-stat"><div class="val">${cs.napCount}</div><div class="lbl">Naps</div></div>
-      <div class="daily-stat"><div class="val">${formatMinsShort(cs.totalNapMins)}</div><div class="lbl">Nap total</div></div>
-      <div class="daily-stat"><div class="val">${cs.feedCount}</div><div class="lbl">Feeds</div></div>
-    </div>`;
-
-  // Timeline
-  const today6am = get6am(cs.now);
-  const events = [];
-
-  state.sleeps.filter(s => s.end > today6am && s.duration > 1).forEach(s => {
-    events.push({
-      time: s.start, type: 'sleep',
-      desc: `${s.nap ? 'Nap' : 'Night'}${s.notes ? ' \u2014 ' + truncate(s.notes, 25) : ''}`,
-      dur: formatMins(s.duration),
-    });
-  });
-
-  state.feeds.filter(f => f.start > today6am).forEach(f => {
-    events.push({
-      time: f.start, type: 'feed',
-      desc: `${f.type || 'Feed'}${f.amount ? ' \u00b7 ' + f.amount + 'ml' : ''}`,
-      dur: f.duration > 1 ? formatMins(f.duration) : '',
-    });
-  });
-
-  events.sort((a, b) => b.time - a.time);
-
-  if (events.length > 0) {
-    html += `
-      <div class="timeline-section fade-in">
-        <div class="section-title">Today's timeline</div>
-        <div class="timeline">
-          ${events.slice(0, 15).map(e => `
-            <div class="timeline-item">
-              <span class="time">${formatTime(e.time)}</span>
-              <span class="dot dot-${e.type}"></span>
-              <span class="desc">${e.desc}</span>
-              <span class="dur">${e.dur}</span>
-            </div>`).join('')}
-        </div>
-      </div>`;
-  }
-
-  if (state.lastRefresh) {
-    html += `<div class="last-refresh">Last refreshed ${formatTime(state.lastRefresh)}</div>`;
-  }
-
-  el.innerHTML = html;
-}
-
-// ===== HELPERS =====
-function formatMins(m) {
-  if (m < 0) m = 0;
-  const h = Math.floor(m / 60);
-  const min = Math.round(m % 60);
-  return h > 0 ? `${h}h ${min}m` : `${min}m`;
-}
-
-function formatMinsShort(m) {
-  const h = Math.floor(m / 60);
-  const min = Math.round(m % 60);
-  return h > 0 ? `${h}h${min > 0 ? min : ''}` : `${min}m`;
-}
-
-function formatMinsClock(m) {
-  if (m < 0) m = 0;
-  const h = Math.floor(m / 60);
-  const min = Math.floor(m % 60);
-  const s = Math.floor((m * 60) % 60);
-  return h > 0
-    ? `${h}:${String(min).padStart(2, '0')}:${String(s).padStart(2, '0')}`
-    : `${min}:${String(s).padStart(2, '0')}`;
-}
-
-function formatTime(d) {
-  return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-}
-
-function truncate(s, n) {
-  return s.length > n ? s.substring(0, n) + '\u2026' : s;
-}
-
-// ===== ACTIONS =====
-function setTemp(t) {
-  state.temperament = state.temperament === t ? null : t;
-  render();
-}
-
-function dismissOverlay() {
-  state.overlayDismissed = true;
-  render();
-}
-
-async function refreshData() {
-  const el = document.getElementById('main-content');
-  el.innerHTML = '<div class="loading"><div class="spinner"></div> Refreshing\u2026</div>';
-  try {
-    await fetchTodayData();
-    render();
-  } catch (e) {
-    el.innerHTML = `<div class="guidance urgent"><div class="guidance-title">\u26a0 Refresh failed</div><div class="guidance-text">${e.message}</div></div>`;
-  }
-}
-
-async function connectAPI() {
-  const url = document.getElementById('input-url').value.trim().replace(/\/+$/, '');
-  const token = document.getElementById('input-token').value.trim().replace(/^Token\s*/i, '');
-  const err = document.getElementById('setup-error');
-
-  if (!url || !token) { err.textContent = 'Please enter both URL and token.'; return; }
-
-  err.textContent = 'Connecting\u2026';
-  state.url = url;
-  state.token = token;
-
-  try {
-    await apiFetch('/api/sleep/', { limit: 1 });
-    saveConfig();
-    err.textContent = '';
-    document.getElementById('setup-screen').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'block';
-    await refreshData();
-    startTicking();
-  } catch (e) {
-    err.textContent = `Connection failed: ${e.message}`;
-  }
-}
-
-function showSetup() {
-  document.getElementById('dashboard').style.display = 'none';
-  document.getElementById('setup-screen').style.display = 'flex';
-  document.getElementById('input-url').value = state.url;
-  document.getElementById('input-token').value = state.token;
-}
-
-function startTicking() {
-  setInterval(() => render(), 15000);   // Re-render every 15s
-  setInterval(() => refreshData(), 300000); // Refresh API every 5 mins
-}
-
-// ===== INIT =====
-window.addEventListener('DOMContentLoaded', async () => {
-  if (loadConfig() && state.token) {
-    document.getElementById('setup-screen').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'block';
-    try {
-      await fetchTodayData();
-      render();
-      startTicking();
-    } catch (e) {
-      showSetup();
-      document.getElementById('setup-error').textContent = `Saved token failed: ${e.message}`;
-    }
-  }
-});
+const P={WF:70,WD:85,WE:90,WM:100,AP:0.75,RP:0.90,EH:16,BL:20,NPS:14,NPE:17,FI:150};
+let S={url:'',token:'',ck:'',sleeps:[],feeds:[],temp:null,od:false,lr:null,ch:[],cl:false};
+function sC(){try{localStorage.setItem('sc4',JSON.stringify({u:S.url,t:S.token,c:S.ck}))}catch(e){}}
+function lC(){try{const r=localStorage.getItem('sc4');if(r){const c=JSON.parse(r);S.url=c.u||'';S.token=c.t||'';S.ck=c.c||'';return !!(S.url&&S.token)}}catch(e){}return false}
+async function aF(p,q={}){const b=S.url.replace(/\/+$/,''),u=new URL(p,b);Object.entries(q).forEach(([k,v])=>u.searchParams.set(k,v));const r=await fetch(u.toString(),{headers:{'Authorization':`Token ${S.token}`,'Accept':'application/json'}});if(!r.ok){if(r.status===403||r.status===401)throw new Error('Invalid API token');throw new Error(`API ${r.status}`)}return r.json()}
+async function fD(){const[sd,fd]=await Promise.all([aF('/api/sleep/',{limit:30,offset:0,ordering:'-start'}),aF('/api/feedings/',{limit:30,offset:0,ordering:'-start'})]);S.sleeps=(sd.results||sd).map(s=>{const a=new Date(s.start),b=new Date(s.end);return{start:a,end:b,dur:(b-a)/60000,nap:s.nap===true||s.nap==='1'||s.nap===1,notes:s.notes||''}}).sort((a,b)=>b.start-a.start);S.feeds=(fd.results||fd).map(f=>{const a=new Date(f.start),b=new Date(f.end);return{start:a,end:b,dur:(b-a)/60000,type:f.type||'',method:f.method||'',amount:f.amount?parseFloat(f.amount):null,notes:f.notes||''}}).sort((a,b)=>b.start-a.start);S.lr=new Date()}
+function g6(n){const d=new Date(n);d.setHours(6,0,0,0);if(n.getHours()<6)d.setDate(d.getDate()-1);return d}
+function gS(){const n=new Date(),h=n.getHours(),ls=S.sleeps[0];let sl=false,ss=null;if(ls){const d=ls.end-ls.start;if(d<60000&&(n-ls.start)<8*3600000&&(n-ls.start)>60000){sl=true;ss=ls.start}}let wm=0,le=null;if(!sl){const c=S.sleeps.filter(s=>(s.end-s.start)>60000);if(c[0]){le=c[0].end;wm=(n-c[0].end)/60000}}const lf=S.feeds[0];let fm=lf?Math.max(0,(n-lf.end)/60000):999;const t6=g6(n),ts=S.sleeps.filter(s=>s.end>t6&&(s.end-s.start)>60000),tn=ts.filter(s=>s.nap),nm=tn.reduce((a,x)=>a+x.dur,0),nc=tn.length,fc=S.feeds.filter(f=>f.start>t6).length,ie=h>=P.EH,ifn=nc===0&&!sl;let tw=ifn&&h<12?P.WF:ie?P.WE:P.WD;const wp=Math.min(wm/tw,1.5),ws=wp>=P.RP?'red':wp>=P.AP?'amber':'green';const ft=S.feeds.filter(f=>f.start>t6&&f.type.toLowerCase().includes('formula'));return{n,h,sl,ss,wm,le,fm,lf,ls,nm,nc,fc,ie,ifn,tw,wp,ws,ft,ts}}
+function gG(c){const g=[],h=c.h,t=S.temp;if(c.sl)return g;
+if(c.ws==='red')g.push({t:'urgent',ti:'⚠ Wake window critical',tx:`Awake <strong>${fM(c.wm)}</strong> — past ${fM(c.tw)}. `+(c.ie?'<strong>Start bedtime routine NOW.</strong>':'<strong>Sleep by any means.</strong>')});
+else if(c.ws==='amber'){const l=Math.max(0,Math.round(c.tw-c.wm));g.push({t:'warning',ti:'⏱ Window closing',tx:`<strong>${l} mins left</strong>. `+(c.ie?'Start bedtime routine.':c.ifn?'Try <strong>crib first</strong>.':'Start settling.')})}
+if(t==='refusing')g.push({t:'warning',ti:'🔄 Fighting sleep',tx:c.wm>80?'<strong>20-min rule:</strong> try 20 mins, break 10–15, fresh parent.':'May not be tired enough yet.'});
+else if(t==='inconsolable')g.push({t:'urgent',ti:'💛 Aim for calm, not sleep',tx:'<strong>Skin-to-skin, bare chest, dim room.</strong> '+(c.ie&&h>=17?'Start bedtime early.':'Once calm, try settling.')});
+else if(t==='drowsy')g.push({t:'positive',ti:'✓ Drowsy — go now',tx:c.ie?'<strong>Bedtime routine.</strong>':c.ifn&&h<12?'<strong>Try crib.</strong>':h>=14&&h<17?'<strong>Contact nap.</strong>':'Settle with whatever works.'});
+else if(t==='calm'){const l=Math.max(0,Math.round(c.tw-c.wm));g.push({t:'positive',ti:'✓ Calm',tx:l>20?`<strong>${l} mins</strong> until settling.`:'Wind down now.'})}
+if(c.fm>P.FI)g.push({t:'warning',ti:'🍼 Feed due',tx:`Last feed <strong>${fM(c.fm)} ago</strong>.`});
+if(c.ie&&!c.sl){if(h>=14&&h<17&&c.nc<3&&!t)g.push({t:'warning',ti:'🛡 Protect late nap',tx:`${c.nc} naps (${fM(c.nm)}). <strong>Contact nap before 5pm.</strong>`});
+if(h>=17&&c.wm>60&&c.le){const bt=new Date(c.le.getTime()+P.WE*60000);g.push({t:'warning',ti:'🌙 Bedtime window',tx:`Routine by <strong>${fT(bt)}</strong>. `+(c.ft.length===0?'Formula not yet given.':'')})}
+if(h>=18&&c.ft.length===0&&!g.some(x=>x.tx.includes('Formula')))g.push({t:'warning',ti:'🍼 Formula reminder',tx:'Save bottle (150–180ml) for <strong>last feed before bed</strong>.'})}
+if(h>=14&&c.nm<120&&!c.sl&&!t)g.push({t:'warning',ti:'📊 Low naps',tx:`<strong>${fM(c.nm)}</strong> nap sleep (target 3–4h).`});
+if(g.length===0)g.push({t:'positive',ti:'✓ On track',tx:`${fM(c.wm)} of ${fM(c.tw)}.`});return g}
+
+function uH(id,h){const e=document.getElementById(id);if(e._l!==h){e.innerHTML=h;e._l=h}}
+function render(){const c=gS();document.getElementById('clock').textContent=fT(c.n);
+const ov=document.getElementById('asleep-overlay');if(c.sl&&!S.od){ov.classList.add('show');document.getElementById('asleep-duration').textContent=fC((c.n-c.ss)/60000);document.getElementById('asleep-message').textContent=c.h>=6&&c.h<19?`Nap started ${fT(c.ss)}. Let him sleep.`:`Night sleep since ${fT(c.ss)}. Rest.`;return}ov.classList.remove('show');if(!c.sl)S.od=false;
+const g=gG(c);
+if(!c.sl){const p=Math.min(c.wp*100,100);uH('wake-hero-container',`<div class="wake-hero ${c.ws}"><div class="wake-label">Awake for</div><div class="wake-time">${fC(c.wm)}</div><div class="wake-bar-track"><div class="wake-bar-fill" style="width:${p}%"></div></div><div class="wake-target">Target: <strong>${fM(c.tw)}</strong>${c.ifn?' (first nap)':c.ie?' (evening)':''}</div></div>`)}else uH('wake-hero-container','');
+uH('status-cards-container',`<div class="status-row"><div class="status-card"><div class="label">Last feed</div><div class="value">${c.lf?fM(c.fm):'--'}</div><div class="sub">${c.lf?c.lf.type+(c.lf.amount?' · '+c.lf.amount+'ml':''):'No data'}</div></div><div class="status-card"><div class="label">Last sleep</div><div class="value">${c.ls&&c.ls.dur>1?fM(c.ls.dur):'--'}</div><div class="sub">${c.ls?(c.ls.nap?'Nap':'Night')+(c.ls.notes?' · '+tr(c.ls.notes,20):''):''}</div></div></div>`);
+uH('temperament-container',`<div class="temperament-section"><div class="section-title">How is he right now?</div><div class="temperament-options"><button class="temp-btn ${S.temp==='calm'?'selected':''}" onclick="setTemp('calm')"><span class="emoji">😊</span>Calm</button><button class="temp-btn ${S.temp==='drowsy'?'selected':''}" onclick="setTemp('drowsy')"><span class="emoji">😴</span>Drowsy</button><button class="temp-btn ${S.temp==='refusing'?'selected':''}" onclick="setTemp('refusing')"><span class="emoji">😤</span>Fighting sleep</button><button class="temp-btn ${S.temp==='inconsolable'?'selected':''}" onclick="setTemp('inconsolable')"><span class="emoji">😭</span>Inconsolable</button></div></div>`);
+uH('guidance-container',g.map(i=>`<div class="guidance ${i.t}"><div class="guidance-title">${i.ti}</div><div class="guidance-text">${i.tx}</div></div>`).join(''));
+uH('daily-stats-container',`<div class="daily-stats"><div class="daily-stat"><div class="val">${c.nc}</div><div class="lbl">Naps</div></div><div class="daily-stat"><div class="val">${fMS(c.nm)}</div><div class="lbl">Nap total</div></div><div class="daily-stat"><div class="val">${c.fc}</div><div class="lbl">Feeds</div></div></div>`);
+const t6=g6(c.n),ev=[];S.sleeps.filter(s=>s.end>t6&&s.dur>1).forEach(s=>ev.push({time:s.start,tp:'sleep',desc:(s.nap?'Nap':'Night')+(s.notes?' — '+tr(s.notes,25):''),dur:fM(s.dur)}));S.feeds.filter(f=>f.start>t6).forEach(f=>ev.push({time:f.start,tp:'feed',desc:(f.type||'Feed')+(f.amount?' · '+f.amount+'ml':''),dur:f.dur>1?fM(f.dur):''}));ev.sort((a,b)=>b.time-a.time);
+uH('timeline-container',ev.length?`<div class="timeline-section"><div class="section-title">Today</div><div class="timeline">${ev.slice(0,15).map(e=>`<div class="timeline-item"><span class="time">${fT(e.time)}</span><span class="dot dot-${e.tp}"></span><span class="desc">${e.desc}</span><span class="dur">${e.dur}</span></div>`).join('')}</div></div>`:'');
+uH('last-refresh-container',S.lr?`<div class="last-refresh">Refreshed ${fT(S.lr)}</div>`:'')}
+function fM(m){m=Math.max(0,m);const h=Math.floor(m/60),n=Math.round(m%60);return h>0?h+'h '+n+'m':n+'m'}
+function fMS(m){const h=Math.floor(m/60),n=Math.round(m%60);return h>0?h+'h'+(n>0?n:''):n+'m'}
+function fC(m){m=Math.max(0,m);const h=Math.floor(m/60),n=Math.floor(m%60),s=Math.floor((m*60)%60);return h>0?h+':'+String(n).padStart(2,'0')+':'+String(s).padStart(2,'0'):n+':'+String(s).padStart(2,'0')}
+function fT(d){return d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}
+function tr(s,n){return s.length>n?s.substring(0,n)+'…':s}
+function setTemp(t){S.temp=S.temp===t?null:t;render()}
+function dismissOverlay(){S.od=true;render()}
+async function refreshData(){try{await fD();render()}catch(e){uH('guidance-container',`<div class="guidance urgent"><div class="guidance-title">⚠ Refresh failed</div><div class="guidance-text">${e.message}</div></div>`)}}
+async function connectAPI(){const u=document.getElementById('input-url').value.trim().replace(/\/+$/,''),t=document.getElementById('input-token').value.trim().replace(/^Token\s*/i,''),c=document.getElementById('input-claude').value.trim(),e=document.getElementById('setup-error');if(!u||!t){e.textContent='URL and token required.';return}e.textContent='Connecting…';S.url=u;S.token=t;S.ck=c;try{await aF('/api/sleep/',{limit:1});sC();e.textContent='';document.getElementById('setup-screen').style.display='none';document.getElementById('dashboard').style.display='block';if(S.ck)document.getElementById('chat-btn').style.display='';await refreshData();startTicking()}catch(x){e.textContent='Connection failed: '+x.message}}
+function showSetup(){document.getElementById('dashboard').style.display='none';document.getElementById('setup-screen').style.display='flex';document.getElementById('input-url').value=S.url;document.getElementById('input-token').value=S.token;document.getElementById('input-claude').value=S.ck}
+function startTicking(){setInterval(()=>render(),15000);setInterval(()=>refreshData(),300000)}
+function openChat(){document.getElementById('chat-backdrop').classList.add('show');document.getElementById('chat-sheet').classList.add('show');document.getElementById('chat-input').focus()}
+function closeChat(){document.getElementById('chat-backdrop').classList.remove('show');document.getElementById('chat-sheet').classList.remove('show')}
+function bSnap(){const c=gS(),t6=g6(c.n),ts=S.sleeps.filter(s=>s.end>t6&&s.dur>1),tf=S.feeds.filter(f=>f.start>t6);return`TIME:${c.n.toLocaleString('en-GB')}\nAWAKE:${fM(c.wm)}(target ${fM(c.tw)},${c.ws})\nLAST SLEEP:${c.ls?fM(c.ls.dur)+' '+(c.ls.nap?'nap':'night')+' ended '+fT(c.ls.end)+(c.ls.notes?' ('+c.ls.notes+')':''):'?'}\nLAST FEED:${c.lf?fM(c.fm)+' ago,'+c.lf.type+(c.lf.amount?' '+c.lf.amount+'ml':''):'?'}\nSLEEPING:${c.sl?'yes since '+fT(c.ss):'no'}\nTEMP:${S.temp||'unset'}\nSLEEPS TODAY(${ts.length}):\n${ts.map(s=>' '+fT(s.start)+'-'+fT(s.end)+' '+fM(s.dur)+' '+(s.nap?'NAP':'NIGHT')+' '+s.notes).join('\n')}\nFEEDS TODAY(${tf.length}):\n${tf.map(f=>' '+fT(f.start)+' '+f.type+(f.amount?' '+f.amount+'ml':'')).join('\n')}\nTOTALS:${c.nc}naps(${fM(c.nm)}),${c.fc}feeds\nFORMULA:${c.ft.length?c.ft.map(f=>(f.amount||'?')+'ml '+fT(f.start)).join(','):'not yet'}`}
+const SYS=`You are a warm, experienced infant sleep consultant advising parents of a 13-week-old boy (2nd percentile, healthy, gaining well). Majority breastfed + one formula bottle/day. You see live tracker data with each message.
+
+THE PLAN:
+- Wake windows: 60-75min first nap, 75-90min day, 90min max evening
+- First morning nap: crib first. Rescue with contact after 10 mins
+- Late afternoon nap (2-5pm): PROTECT. Contact only. Even 20 mins counts
+- 20-minute rule: try 20 mins, break 10-15, fresh parent, try again
+- Bedtime: 90 mins max after last nap. Routine: sleeping bag, breast feed, formula top-up 150-180ml, hold upright 20 mins, transfer to warm next-to-me crib. Target before 8pm
+- Formula: always last feed before long sleep. Breast first, then bottle
+- Night feeds: don't drop any. <2.5hrs since last feed: try resettle 5 mins first. >2.5hrs: feed promptly
+- Evening crying: aim for calm not sleep. Skin-to-skin, bare chest. Start bedtime early if inconsolable 30+ mins
+- Environment: next-to-me crib, night light, white noise. No dummy
+- NEVER suggest cry-it-out or leaving him to cry alone - he's 13 weeks
+
+RULES: 2-4 sentences MAX. They're reading one-handed at 3am. Reference actual data. Be warm but direct. Crisis = ONE clear action.`;
+async function sendChat(){const inp=document.getElementById('chat-input'),msg=inp.value.trim();if(!msg||S.cl)return;inp.value='';S.ch.push({role:'user',content:msg});addB('user',msg);S.cl=true;document.getElementById('chat-send').disabled=true;const typ=document.createElement('div');typ.className='chat-typing';typ.textContent='Thinking…';document.getElementById('chat-messages').appendChild(typ);scC();
+try{const snap=bSnap(),msgs=S.ch.map((m,i)=>i===S.ch.length-1&&m.role==='user'?{role:'user',content:`[DATA]\n${snap}\n\n[Q]\n${m.content}`}:m);const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':S.ck,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,system:SYS,messages:msgs.slice(-10)})});typ.remove();if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||'Error '+r.status)}const d=await r.json(),reply=d.content.map(c=>c.text||'').join('');S.ch.push({role:'assistant',content:reply});addB('assistant',reply)}catch(e){typ.remove();addB('system','Error: '+e.message)}S.cl=false;document.getElementById('chat-send').disabled=false}
+function addB(r,t){const e=document.createElement('div');e.className='chat-msg '+r;e.innerHTML=t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');document.getElementById('chat-messages').appendChild(e);scC()}
+function scC(){const c=document.getElementById('chat-messages');requestAnimationFrame(()=>{c.scrollTop=c.scrollHeight})}
+window.addEventListener('DOMContentLoaded',async()=>{if(lC()){document.getElementById('setup-screen').style.display='none';document.getElementById('dashboard').style.display='block';if(S.ck)document.getElementById('chat-btn').style.display='';try{await fD();render();startTicking()}catch(e){showSetup();document.getElementById('setup-error').textContent='Config failed: '+e.message}}})
 </script>
 </body>
 </html>

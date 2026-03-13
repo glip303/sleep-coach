@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0e17">
+<title>Sleep Coach</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&family=DM+Mono:wght@300;400&display=swap');
+
+  :root {
+    --bg: #0a0e17;
+    --surface: #131926;
+    --surface-raised: #1a2235;
+    --surface-bright: #222d42;
+    --text: #e8ecf4;
+    --text-dim: #8694ad;
+    --text-faint: #4a5672;
+    --green: #34d399;
+    --green-dim: #065f46;
+    --amber: #fbbf24;
+    --amber-dim: #78350f;
+    --red: #f87171;
+    --red-dim: #7f1d1d;
+    --blue: #60a5fa;
+    --blue-dim: #1e3a5f;
+    --purple: #a78bfa;
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100dvh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== SETUP SCREEN ===== */
+  #setup-screen {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  #setup-screen h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+
+  #setup-screen p {
+    color: var(--text-dim);
+    margin-bottom: 32px;
+    font-size: 15px;
+  }
+
+  .setup-form {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .setup-form label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: -8px;
+  }
+
+  .setup-form input {
+    background: var(--surface);
+    border: 1px solid var(--surface-bright);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .setup-form input:focus { border-color: var(--blue); }
+  .setup-form input::placeholder { color: var(--text-faint); }
+
+  .setup-hint {
+    font-size: 12px;
+    color: var(--text-faint);
+    margin-top: -10px;
+    line-height: 1.4;
+  }
+
+  .btn {
+    background: var(--blue);
+    color: var(--bg);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 14px 24px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: -0.2px;
+  }
+
+  .btn:active { transform: scale(0.97); opacity: 0.9; }
+  .btn-large { padding: 18px 32px; font-size: 18px; border-radius: var(--radius); }
+  .btn-secondary { background: var(--surface-bright); color: var(--text); }
+  .btn-green { background: var(--green); }
+  .btn-amber { background: var(--amber); color: var(--bg); }
+  .btn-red { background: var(--red); color: var(--bg); }
+
+  .error-text {
+    color: var(--red);
+    font-size: 14px;
+    text-align: center;
+    min-height: 20px;
+  }
+
+  /* ===== MAIN DASHBOARD ===== */
+  #dashboard {
+    display: none;
+    min-height: 100dvh;
+    padding: 16px 16px 100px;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0 20px;
+  }
+
+  .header h2 { font-size: 20px; font-weight: 600; letter-spacing: -0.3px; }
+
+  .header-time {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    color: var(--text-dim);
+  }
+
+  .settings-btn {
+    background: var(--surface);
+    border: none;
+    color: var(--text-dim);
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ===== WAKE WINDOW HERO ===== */
+  .wake-hero {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .wake-hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--green);
+    transition: background 0.5s;
+  }
+
+  .wake-hero.amber::before { background: var(--amber); }
+  .wake-hero.red::before { background: var(--red); }
+
+  .wake-label {
+    font-size: 13px; font-weight: 500;
+    color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+
+  .wake-time {
+    font-family: 'DM Mono', monospace;
+    font-size: 52px; font-weight: 400;
+    letter-spacing: -2px; line-height: 1;
+    margin-bottom: 12px;
+    transition: color 0.5s;
+  }
+
+  .wake-hero.amber .wake-time { color: var(--amber); }
+  .wake-hero.red .wake-time { color: var(--red); }
+
+  .wake-bar-track {
+    width: 100%; height: 6px;
+    background: var(--surface-bright);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+
+  .wake-bar-fill {
+    height: 100%;
+    background: var(--green);
+    border-radius: 3px;
+    transition: width 1s linear, background 0.5s;
+    width: 0%;
+  }
+
+  .wake-hero.amber .wake-bar-fill { background: var(--amber); }
+  .wake-hero.red .wake-bar-fill { background: var(--red); }
+
+  .wake-target { font-size: 13px; color: var(--text-dim); }
+  .wake-target strong { color: var(--text); font-weight: 500; }
+
+  /* ===== STATUS CARDS ===== */
+  .status-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .status-card {
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+  }
+
+  .status-card .label {
+    font-size: 12px; color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.4px;
+    margin-bottom: 6px;
+  }
+
+  .status-card .value {
+    font-family: 'DM Mono', monospace;
+    font-size: 22px; font-weight: 400;
+  }
+
+  .status-card .sub { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+
+  /* ===== GUIDANCE PANEL ===== */
+  .guidance {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+    border-left: 3px solid var(--blue);
+  }
+
+  .guidance.urgent {
+    border-left-color: var(--red);
+    background: linear-gradient(135deg, var(--red-dim), var(--surface));
+  }
+
+  .guidance.warning {
+    border-left-color: var(--amber);
+    background: linear-gradient(135deg, var(--amber-dim), var(--surface));
+  }
+
+  .guidance.positive {
+    border-left-color: var(--green);
+    background: linear-gradient(135deg, var(--green-dim), var(--surface));
+  }
+
+  .guidance-title {
+    font-size: 15px; font-weight: 600;
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .guidance-text {
+    font-size: 14px; line-height: 1.6;
+    color: var(--text-dim);
+  }
+
+  .guidance-text strong { color: var(--text); font-weight: 500; }
+
+  /* ===== TEMPERAMENT SELECTOR ===== */
+  .temperament-section { margin-bottom: 16px; }
+
+  .section-title {
+    font-size: 13px; font-weight: 500;
+    color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+
+  .temperament-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .temp-btn {
+    background: var(--surface);
+    border: 1px solid var(--surface-bright);
+    border-radius: var(--radius-sm);
+    padding: 14px 12px;
+    color: var(--text-dim);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+
+  .temp-btn:active { transform: scale(0.97); }
+
+  .temp-btn.selected {
+    border-color: var(--blue);
+    color: var(--text);
+    background: var(--blue-dim);
+  }
+
+  .temp-btn .emoji { display: block; font-size: 24px; margin-bottom: 4px; }
+
+  /* ===== TIMELINE ===== */
+  .timeline-section { margin-bottom: 16px; }
+
+  .timeline { display: flex; flex-direction: column; gap: 6px; }
+
+  .timeline-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px;
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+  }
+
+  .timeline-item .time {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px; color: var(--text-dim);
+    min-width: 48px;
+  }
+
+  .timeline-item .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .dot-sleep { background: var(--purple); }
+  .dot-feed { background: var(--blue); }
+
+  .timeline-item .desc { flex: 1; color: var(--text-dim); }
+
+  .timeline-item .dur {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px; color: var(--text-faint);
+  }
+
+  /* ===== DAILY STATS ===== */
+  .daily-stats {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .daily-stat .val { font-family: 'DM Mono', monospace; font-size: 20px; font-weight: 400; }
+
+  .daily-stat .lbl {
+    font-size: 11px; color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.3px; margin-top: 2px;
+  }
+
+  /* ===== REFRESH BAR ===== */
+  .refresh-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--surface-bright);
+    padding: 12px 16px env(safe-area-inset-bottom, 0);
+    display: flex; justify-content: center; gap: 12px;
+    z-index: 100;
+  }
+
+  .refresh-bar .btn { flex: 1; max-width: 240px; }
+
+  .last-refresh {
+    font-size: 11px; color: var(--text-faint);
+    text-align: center; margin-top: 4px;
+  }
+
+  /* ===== LOADING ===== */
+  .loading {
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px; padding: 40px;
+    color: var(--text-dim); font-size: 15px;
+  }
+
+  .spinner {
+    width: 20px; height: 20px;
+    border: 2px solid var(--surface-bright);
+    border-top-color: var(--blue);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ===== ASLEEP OVERLAY ===== */
+  .asleep-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(5, 8, 15, 0.97);
+    z-index: 200;
+    flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 32px;
+    text-align: center;
+  }
+
+  .asleep-overlay.show { display: flex; }
+
+  .asleep-overlay .moon {
+    font-size: 64px; margin-bottom: 20px;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .asleep-overlay h2 { font-size: 24px; font-weight: 600; margin-bottom: 8px; }
+
+  .asleep-overlay .asleep-dur {
+    font-family: 'DM Mono', monospace;
+    font-size: 40px; color: var(--purple); margin: 16px 0;
+  }
+
+  .asleep-overlay p {
+    color: var(--text-dim); font-size: 15px;
+    line-height: 1.5; max-width: 300px;
+  }
+
+  .asleep-overlay .btn { margin-top: 24px; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in { animation: fadeIn 0.3s ease-out; }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--surface-bright); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- SETUP SCREEN -->
+<div id="setup-screen">
+  <h1>Sleep Coach</h1>
+  <p>Connect to BabyBuddy</p>
+  <div class="setup-form">
+    <label>BabyBuddy URL</label>
+    <input type="url" id="input-url" placeholder="https://henry.lipington.com" autocomplete="url" />
+    <div class="setup-hint">Your BabyBuddy address (no trailing slash)</div>
+    <label>API Token</label>
+    <input type="text" id="input-token" placeholder="abc123def456..." autocomplete="off" />
+    <div class="setup-hint">Find this in BabyBuddy → User Settings → API Key</div>
+    <div class="error-text" id="setup-error"></div>
+    <button class="btn btn-large" onclick="connectAPI()">Connect</button>
+  </div>
+</div>
+
+<!-- MAIN DASHBOARD -->
+<div id="dashboard">
+  <div class="header">
+    <h2>Sleep Coach</h2>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span class="header-time" id="clock"></span>
+      <button class="settings-btn" onclick="showSetup()" title="Settings">⚙</button>
+    </div>
+  </div>
+
+  <div id="main-content">
+    <div class="loading"><div class="spinner"></div> Loading data...</div>
+  </div>
+
+  <div class="refresh-bar">
+    <button class="btn btn-secondary" onclick="refreshData()">↻ Refresh</button>
+  </div>
+</div>
+
+<!-- ASLEEP OVERLAY -->
+<div class="asleep-overlay" id="asleep-overlay">
+  <div class="moon">🌙</div>
+  <h2>He's asleep</h2>
+  <div class="asleep-dur" id="asleep-duration">00:00</div>
+  <p id="asleep-message">Don't touch anything. Breathe.</p>
+  <button class="btn btn-secondary" onclick="dismissOverlay()">View dashboard</button>
+</div>
+
+<script>
+// ===== CONFIG =====
+const PLAN = {
+  WAKE_WINDOW_FIRST: 70,
+  WAKE_WINDOW_DAY: 85,
+  WAKE_WINDOW_EVENING: 90,
+  WAKE_WINDOW_HARD_MAX: 100,
+  AMBER_PERCENT: 0.75,
+  RED_PERCENT: 0.90,
+  EVENING_START_HOUR: 16,
+  BEDTIME_LATEST: 20,
+  NAP_PROTECT_START: 14,
+  NAP_PROTECT_END: 17,
+  FEED_INTERVAL: 150,
+  NIGHT_FEED_MIN_GAP: 150,
+};
+
+// ===== STATE =====
+let state = {
+  url: '',
+  token: '',
+  sleeps: [],
+  feeds: [],
+  temperament: null,
+  overlayDismissed: false,
+  lastRefresh: null,
+};
+
+// ===== PERSISTENCE =====
+function saveConfig() {
+  try { localStorage.setItem('sleepcoach_config', JSON.stringify({ url: state.url, token: state.token })); } catch(e) {}
+}
+
+function loadConfig() {
+  try {
+    const raw = localStorage.getItem('sleepcoach_config');
+    if (raw) {
+      const c = JSON.parse(raw);
+      state.url = c.url || '';
+      state.token = c.token || '';
+      return state.url && state.token;
+    }
+  } catch(e) {}
+  return false;
+}
+
+// ===== API =====
+// All API calls go to the configured BabyBuddy URL (CORS must be enabled on BabyBuddy)
+async function apiFetch(path, params = {}) {
+  const base = state.url.replace(/\/+$/, '');
+  const url = new URL(path, base);
+  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+
+  const resp = await fetch(url.toString(), {
+    headers: {
+      'Authorization': `Token ${state.token}`,
+      'Accept': 'application/json',
+    }
+  });
+
+  if (!resp.ok) {
+    if (resp.status === 403 || resp.status === 401) throw new Error('Invalid API token');
+    throw new Error(`API error: ${resp.status}`);
+  }
+  return resp.json();
+}
+
+async function fetchTodayData() {
+  const [sleepData, feedData] = await Promise.all([
+    apiFetch('/api/sleep/', { limit: 30, offset: 0, ordering: '-start' }),
+    apiFetch('/api/feedings/', { limit: 30, offset: 0, ordering: '-start' }),
+  ]);
+
+  const parseSleeps = (data) => {
+    const arr = data.results || data;
+    return arr.map(s => {
+      const start = new Date(s.start);
+      const end = new Date(s.end);
+      return {
+        start, end,
+        duration: (end - start) / 60000,
+        nap: s.nap === true || s.nap === '1' || s.nap === 1,
+        notes: s.notes || '',
+      };
+    }).sort((a, b) => b.start - a.start);
+  };
+
+  const parseFeeds = (data) => {
+    const arr = data.results || data;
+    return arr.map(f => {
+      const start = new Date(f.start);
+      const end = new Date(f.end);
+      return {
+        start, end,
+        duration: (end - start) / 60000,
+        type: f.type || '',
+        method: f.method || '',
+        amount: f.amount ? parseFloat(f.amount) : null,
+        notes: f.notes || '',
+      };
+    }).sort((a, b) => b.start - a.start);
+  };
+
+  state.sleeps = parseSleeps(sleepData);
+  state.feeds = parseFeeds(feedData);
+  state.lastRefresh = new Date();
+}
+
+// ===== ANALYSIS =====
+function get6am(now) {
+  const d = new Date(now);
+  d.setHours(6, 0, 0, 0);
+  if (now.getHours() < 6) d.setDate(d.getDate() - 1);
+  return d;
+}
+
+function getCurrentState() {
+  const now = new Date();
+  const hour = now.getHours();
+
+  const lastSleep = state.sleeps[0];
+
+  // Detect active sleep: BabyBuddy often shows duration ~0 for active timers
+  let sleeping = false;
+  let sleepStart = null;
+  if (lastSleep) {
+    const durMs = lastSleep.end - lastSleep.start;
+    if (durMs < 60000 && (now - lastSleep.start) < 8 * 3600000 && (now - lastSleep.start) > 60000) {
+      sleeping = true;
+      sleepStart = lastSleep.start;
+    }
+  }
+
+  // Wake window
+  let wakeMinutes = 0;
+  let lastSleepEnd = null;
+  if (!sleeping) {
+    // Find the most recent sleep that actually ended (duration > 1 min)
+    const completedSleeps = state.sleeps.filter(s => (s.end - s.start) > 60000);
+    const lastCompleted = completedSleeps[0];
+    if (lastCompleted) {
+      lastSleepEnd = lastCompleted.end;
+      wakeMinutes = (now - lastCompleted.end) / 60000;
+    }
+  }
+
+  // Last feed
+  const lastFeed = state.feeds[0];
+  let feedMinutes = lastFeed ? (now - lastFeed.end) / 60000 : 999;
+  if (feedMinutes < 0) feedMinutes = 0;
+
+  // Today totals
+  const today6am = get6am(now);
+  const todaySleeps = state.sleeps.filter(s => s.end > today6am && (s.end - s.start) > 60000);
+  const todayNaps = todaySleeps.filter(s => s.nap);
+  const todayNight = todaySleeps.filter(s => !s.nap);
+  const totalNapMins = todayNaps.reduce((sum, s) => sum + s.duration, 0);
+  const totalNightMins = todayNight.reduce((sum, s) => sum + s.duration, 0);
+  const napCount = todayNaps.length;
+  const feedCount = state.feeds.filter(f => f.start > today6am).length;
+
+  const isEvening = hour >= PLAN.EVENING_START_HOUR;
+
+  // Target wake window
+  let targetWakeWindow;
+  const isFirstNap = napCount === 0 && !sleeping;
+  if (isFirstNap && hour < 12) {
+    targetWakeWindow = PLAN.WAKE_WINDOW_FIRST;
+  } else if (isEvening) {
+    targetWakeWindow = PLAN.WAKE_WINDOW_EVENING;
+  } else {
+    targetWakeWindow = PLAN.WAKE_WINDOW_DAY;
+  }
+
+  const wakePercent = Math.min(wakeMinutes / targetWakeWindow, 1.5);
+  let wakeStatus = 'green';
+  if (wakePercent >= PLAN.RED_PERCENT) wakeStatus = 'red';
+  else if (wakePercent >= PLAN.AMBER_PERCENT) wakeStatus = 'amber';
+
+  const formulaToday = state.feeds.filter(f =>
+    f.start > today6am && (f.type.toLowerCase().includes('formula') || (f.method && f.method.toLowerCase().includes('bottle') && f.type.toLowerCase().includes('formula')))
+  );
+
+  return {
+    now, hour, sleeping, sleepStart, wakeMinutes, lastSleepEnd,
+    feedMinutes, lastFeed, lastSleep,
+    totalNapMins, totalNightMins, napCount, feedCount,
+    isEvening, isFirstNap, targetWakeWindow, wakePercent, wakeStatus,
+    formulaToday, todayNaps, todayNight, todaySleeps,
+  };
+}
+
+// ===== GUIDANCE ENGINE =====
+function getGuidance(cs) {
+  const guidance = [];
+  const hour = cs.hour;
+  const temp = state.temperament;
+
+  if (cs.sleeping) return guidance;
+
+  // Wake window alerts
+  if (cs.wakeStatus === 'red') {
+    guidance.push({
+      type: 'urgent',
+      title: '\u26a0 Wake window critical',
+      text: `He's been awake <strong>${formatMins(cs.wakeMinutes)}</strong> \u2014 past his ${formatMins(cs.targetWakeWindow)} target. ` +
+        (cs.isEvening
+          ? `<strong>Start the bedtime routine NOW.</strong> Sleeping bag, dim room, breast feed, formula top-up. Don't wait for more tired signs \u2014 he's already overtired.`
+          : `<strong>Get him to sleep by any means.</strong> Contact, feed to sleep, carrier \u2014 whatever works. Don't attempt the crib right now.`)
+    });
+  } else if (cs.wakeStatus === 'amber') {
+    const minsLeft = Math.max(0, Math.round(cs.targetWakeWindow - cs.wakeMinutes));
+    guidance.push({
+      type: 'warning',
+      title: '\u23f1 Nap window closing',
+      text: `<strong>${minsLeft} minutes left</strong> in his wake window. ` +
+        (cs.isEvening
+          ? `This is the bedtime window. Start the routine within the next ${minsLeft} minutes.`
+          : cs.isFirstNap
+            ? `First nap \u2014 try the <strong>crib first</strong>. If he's not settling after 10 minutes, rescue with contact.`
+            : `Start settling now. Dark room, white noise.`)
+    });
+  }
+
+  // Temperament-specific
+  if (temp === 'refusing') {
+    guidance.push({
+      type: 'warning',
+      title: '\ud83d\udd04 He\'s fighting sleep',
+      text: cs.wakeMinutes > 80
+        ? `Awake ${formatMins(cs.wakeMinutes)} and refusing to settle. <strong>20-minute rule:</strong> try for 20 minutes max, then break \u2014 calm activity, change of scene for 10\u201315 minutes. Try again with a fresh parent. Don't bounce for 2 hours.`
+        : `Still within wake window so he may not be tired enough yet. Wait until closer to the ${formatMins(cs.targetWakeWindow)} mark. Watch for yawning, eye-rubbing, staring.`
+    });
+  } else if (temp === 'inconsolable') {
+    guidance.push({
+      type: 'urgent',
+      title: '\ud83d\udc9b Stop aiming for sleep \u2014 aim for calm',
+      text: `<strong>Skin-to-skin on bare chest.</strong> Dim room, white noise. Gentle sway \u2014 no bouncing. Let him cry but contain him. Offer breast every 20 minutes, don't force it. ` +
+        (cs.isEvening && hour >= 17
+          ? `If this has been going on 30+ minutes, <strong>start bedtime routine early</strong> \u2014 sleeping bag, feed, formula. An early bedtime beats fighting until 10pm.`
+          : `Once he's calmer even briefly, that's your window to try settling.`)
+    });
+  } else if (temp === 'drowsy') {
+    guidance.push({
+      type: 'positive',
+      title: '\u2713 Good window \u2014 he\'s drowsy',
+      text: cs.isEvening
+        ? `<strong>Start bedtime routine now.</strong> Sleeping bag, breast feed, formula top-up. Hold upright 20 mins, transfer to warm mattress.`
+        : cs.isFirstNap && hour < 12
+          ? `<strong>Try the crib.</strong> Morning nap = highest sleep pressure, best crib success. Place down drowsy. If he wakes within 5 mins, pick up, calm, try once more.`
+          : hour >= PLAN.NAP_PROTECT_START && hour < PLAN.NAP_PROTECT_END
+            ? `Critical late afternoon nap. <strong>Use contact.</strong> Don't risk crib transfer. Let him sleep on you as long as possible \u2014 this protects the evening.`
+            : `Good \u2014 settle him with whatever's working today. Dark room, white noise. If he falls asleep feeding, let him stay.`
+    });
+  } else if (temp === 'calm') {
+    const minsLeft = Math.max(0, Math.round(cs.targetWakeWindow - cs.wakeMinutes));
+    guidance.push({
+      type: 'positive',
+      title: '\u2713 Calm and awake',
+      text: minsLeft > 20
+        ? `Good! <strong>${minsLeft} minutes</strong> before settling time. Low-key activity \u2014 tummy time, chat. Watch for first sleepy cues.`
+        : `Window closing soon. Start winding down \u2014 dim lights, slow stimulation. Be ready to settle within ${minsLeft} minutes.`
+    });
+  }
+
+  // Feed timing
+  if (cs.feedMinutes > PLAN.FEED_INTERVAL) {
+    guidance.push({
+      type: 'warning',
+      title: '\ud83c\udf7c Feed due',
+      text: `Last feed ended <strong>${formatMins(cs.feedMinutes)} ago</strong>. ` +
+        (cs.wakeMinutes > 60
+          ? `Offer a feed before settling \u2014 a hungry baby won't sleep.`
+          : `Offer a feed now.`)
+    });
+  }
+
+  // Evening specifics
+  if (cs.isEvening && !cs.sleeping) {
+    if (hour >= PLAN.NAP_PROTECT_START && hour < PLAN.NAP_PROTECT_END && cs.napCount < 3 && !temp) {
+      guidance.push({
+        type: 'warning',
+        title: '\ud83d\udee1 Protect the late nap',
+        text: `Only ${cs.napCount} nap${cs.napCount !== 1 ? 's' : ''} today (${formatMins(cs.totalNapMins)}). He needs a nap before 5pm or the evening will be very hard. <strong>Use contact \u2014 don't attempt crib.</strong> Even 20 minutes counts.`
+      });
+    }
+
+    if (hour >= 17 && cs.wakeMinutes > 60 && cs.lastSleepEnd) {
+      const bedtimeTarget = new Date(cs.lastSleepEnd.getTime() + PLAN.WAKE_WINDOW_EVENING * 60000);
+      if (bedtimeTarget.getHours() < PLAN.BEDTIME_LATEST + 1) {
+        guidance.push({
+          type: 'warning',
+          title: '\ud83c\udf19 Bedtime window',
+          text: `Last nap ended at <strong>${formatTime(cs.lastSleepEnd)}</strong>. Start bedtime routine by <strong>${formatTime(bedtimeTarget)}</strong>. ` +
+            (cs.formulaToday.length === 0
+              ? `Formula bottle not yet given \u2014 use as final top-up at bedtime (150\u2013180ml).`
+              : '')
+        });
+      }
+    }
+
+    if (hour >= 18 && cs.formulaToday.length === 0 && !guidance.some(g => g.text.includes('Formula'))) {
+      guidance.push({
+        type: 'warning',
+        title: '\ud83c\udf7c Formula reminder',
+        text: `Save the formula bottle (150\u2013180ml) for the <strong>last feed before the long sleep</strong>. Breast feed first, then bottle as top-up.`
+      });
+    }
+  }
+
+  // Low nap total
+  if (hour >= 14 && cs.totalNapMins < 120 && !cs.sleeping && !temp) {
+    guidance.push({
+      type: 'warning',
+      title: '\ud83d\udcca Low nap total',
+      text: `Only <strong>${formatMins(cs.totalNapMins)}</strong> nap sleep today (target: 3\u20134 hours). Prioritise getting at least one more solid nap. Contact, carrier, pram \u2014 whatever works.`
+    });
+  }
+
+  if (guidance.length === 0) {
+    guidance.push({
+      type: 'positive',
+      title: '\u2713 On track',
+      text: `Everything looks OK. Wake window at ${formatMins(cs.wakeMinutes)} of ${formatMins(cs.targetWakeWindow)} target.`
+    });
+  }
+
+  return guidance;
+}
+
+// ===== RENDER =====
+function render() {
+  const cs = getCurrentState();
+  const el = document.getElementById('main-content');
+
+  document.getElementById('clock').textContent = formatTime(cs.now);
+
+  // Asleep overlay
+  const overlay = document.getElementById('asleep-overlay');
+  if (cs.sleeping && !state.overlayDismissed) {
+    overlay.classList.add('show');
+    const dur = (cs.now - cs.sleepStart) / 60000;
+    document.getElementById('asleep-duration').textContent = formatMinsClock(dur);
+    const isNap = cs.hour >= 6 && cs.hour < 19;
+    document.getElementById('asleep-message').textContent = isNap
+      ? `Nap started at ${formatTime(cs.sleepStart)}. Don't transfer \u2014 let him sleep.`
+      : `Night sleep started at ${formatTime(cs.sleepStart)}. Rest while you can.`;
+    return;
+  } else {
+    overlay.classList.remove('show');
+    if (!cs.sleeping) state.overlayDismissed = false;
+  }
+
+  const g = getGuidance(cs);
+  let html = '';
+
+  // Wake hero
+  if (!cs.sleeping) {
+    const pct = Math.min(cs.wakePercent * 100, 100);
+    html += `
+      <div class="wake-hero ${cs.wakeStatus} fade-in">
+        <div class="wake-label">Awake for</div>
+        <div class="wake-time">${formatMinsClock(cs.wakeMinutes)}</div>
+        <div class="wake-bar-track"><div class="wake-bar-fill" style="width:${pct}%"></div></div>
+        <div class="wake-target">
+          Target: <strong>${formatMins(cs.targetWakeWindow)}</strong>
+          ${cs.isFirstNap ? ' (first nap \u2014 shorter window)' : cs.isEvening ? ' (evening max)' : ''}
+        </div>
+      </div>`;
+  }
+
+  // Status cards
+  html += `
+    <div class="status-row fade-in">
+      <div class="status-card">
+        <div class="label">Last feed</div>
+        <div class="value">${cs.lastFeed ? formatMins(cs.feedMinutes) : '--'}</div>
+        <div class="sub">${cs.lastFeed ? cs.lastFeed.type + (cs.lastFeed.amount ? ' \u00b7 ' + cs.lastFeed.amount + 'ml' : '') : 'No data'}</div>
+      </div>
+      <div class="status-card">
+        <div class="label">Last sleep</div>
+        <div class="value">${cs.lastSleep && cs.lastSleep.duration > 1 ? formatMins(cs.lastSleep.duration) : '--'}</div>
+        <div class="sub">${cs.lastSleep ? (cs.lastSleep.nap ? 'Nap' : 'Night') + (cs.lastSleep.notes ? ' \u00b7 ' + truncate(cs.lastSleep.notes, 20) : '') : ''}</div>
+      </div>
+    </div>`;
+
+  // Temperament
+  html += `
+    <div class="temperament-section fade-in">
+      <div class="section-title">How is he right now?</div>
+      <div class="temperament-options">
+        <button class="temp-btn ${state.temperament === 'calm' ? 'selected' : ''}" onclick="setTemp('calm')">
+          <span class="emoji">\ud83d\ude0a</span>Calm / alert
+        </button>
+        <button class="temp-btn ${state.temperament === 'drowsy' ? 'selected' : ''}" onclick="setTemp('drowsy')">
+          <span class="emoji">\ud83d\ude34</span>Drowsy
+        </button>
+        <button class="temp-btn ${state.temperament === 'refusing' ? 'selected' : ''}" onclick="setTemp('refusing')">
+          <span class="emoji">\ud83d\ude24</span>Fighting sleep
+        </button>
+        <button class="temp-btn ${state.temperament === 'inconsolable' ? 'selected' : ''}" onclick="setTemp('inconsolable')">
+          <span class="emoji">\ud83d\ude2d</span>Inconsolable
+        </button>
+      </div>
+    </div>`;
+
+  // Guidance
+  g.forEach(item => {
+    html += `
+      <div class="guidance ${item.type} fade-in">
+        <div class="guidance-title">${item.title}</div>
+        <div class="guidance-text">${item.text}</div>
+      </div>`;
+  });
+
+  // Daily stats
+  html += `
+    <div class="daily-stats fade-in">
+      <div class="daily-stat"><div class="val">${cs.napCount}</div><div class="lbl">Naps</div></div>
+      <div class="daily-stat"><div class="val">${formatMinsShort(cs.totalNapMins)}</div><div class="lbl">Nap total</div></div>
+      <div class="daily-stat"><div class="val">${cs.feedCount}</div><div class="lbl">Feeds</div></div>
+    </div>`;
+
+  // Timeline
+  const today6am = get6am(cs.now);
+  const events = [];
+
+  state.sleeps.filter(s => s.end > today6am && s.duration > 1).forEach(s => {
+    events.push({
+      time: s.start, type: 'sleep',
+      desc: `${s.nap ? 'Nap' : 'Night'}${s.notes ? ' \u2014 ' + truncate(s.notes, 25) : ''}`,
+      dur: formatMins(s.duration),
+    });
+  });
+
+  state.feeds.filter(f => f.start > today6am).forEach(f => {
+    events.push({
+      time: f.start, type: 'feed',
+      desc: `${f.type || 'Feed'}${f.amount ? ' \u00b7 ' + f.amount + 'ml' : ''}`,
+      dur: f.duration > 1 ? formatMins(f.duration) : '',
+    });
+  });
+
+  events.sort((a, b) => b.time - a.time);
+
+  if (events.length > 0) {
+    html += `
+      <div class="timeline-section fade-in">
+        <div class="section-title">Today's timeline</div>
+        <div class="timeline">
+          ${events.slice(0, 15).map(e => `
+            <div class="timeline-item">
+              <span class="time">${formatTime(e.time)}</span>
+              <span class="dot dot-${e.type}"></span>
+              <span class="desc">${e.desc}</span>
+              <span class="dur">${e.dur}</span>
+            </div>`).join('')}
+        </div>
+      </div>`;
+  }
+
+  if (state.lastRefresh) {
+    html += `<div class="last-refresh">Last refreshed ${formatTime(state.lastRefresh)}</div>`;
+  }
+
+  el.innerHTML = html;
+}
+
+// ===== HELPERS =====
+function formatMins(m) {
+  if (m < 0) m = 0;
+  const h = Math.floor(m / 60);
+  const min = Math.round(m % 60);
+  return h > 0 ? `${h}h ${min}m` : `${min}m`;
+}
+
+function formatMinsShort(m) {
+  const h = Math.floor(m / 60);
+  const min = Math.round(m % 60);
+  return h > 0 ? `${h}h${min > 0 ? min : ''}` : `${min}m`;
+}
+
+function formatMinsClock(m) {
+  if (m < 0) m = 0;
+  const h = Math.floor(m / 60);
+  const min = Math.floor(m % 60);
+  const s = Math.floor((m * 60) % 60);
+  return h > 0
+    ? `${h}:${String(min).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+    : `${min}:${String(s).padStart(2, '0')}`;
+}
+
+function formatTime(d) {
+  return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+}
+
+function truncate(s, n) {
+  return s.length > n ? s.substring(0, n) + '\u2026' : s;
+}
+
+// ===== ACTIONS =====
+function setTemp(t) {
+  state.temperament = state.temperament === t ? null : t;
+  render();
+}
+
+function dismissOverlay() {
+  state.overlayDismissed = true;
+  render();
+}
+
+async function refreshData() {
+  const el = document.getElementById('main-content');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div> Refreshing\u2026</div>';
+  try {
+    await fetchTodayData();
+    render();
+  } catch (e) {
+    el.innerHTML = `<div class="guidance urgent"><div class="guidance-title">\u26a0 Refresh failed</div><div class="guidance-text">${e.message}</div></div>`;
+  }
+}
+
+async function connectAPI() {
+  const url = document.getElementById('input-url').value.trim().replace(/\/+$/, '');
+  const token = document.getElementById('input-token').value.trim().replace(/^Token\s*/i, '');
+  const err = document.getElementById('setup-error');
+
+  if (!url || !token) { err.textContent = 'Please enter both URL and token.'; return; }
+
+  err.textContent = 'Connecting\u2026';
+  state.url = url;
+  state.token = token;
+
+  try {
+    await apiFetch('/api/sleep/', { limit: 1 });
+    saveConfig();
+    err.textContent = '';
+    document.getElementById('setup-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    await refreshData();
+    startTicking();
+  } catch (e) {
+    err.textContent = `Connection failed: ${e.message}`;
+  }
+}
+
+function showSetup() {
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('setup-screen').style.display = 'flex';
+  document.getElementById('input-url').value = state.url;
+  document.getElementById('input-token').value = state.token;
+}
+
+function startTicking() {
+  setInterval(() => render(), 15000);   // Re-render every 15s
+  setInterval(() => refreshData(), 300000); // Refresh API every 5 mins
+}
+
+// ===== INIT =====
+window.addEventListener('DOMContentLoaded', async () => {
+  if (loadConfig() && state.token) {
+    document.getElementById('setup-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    try {
+      await fetchTodayData();
+      render();
+      startTicking();
+    } catch (e) {
+      showSetup();
+      document.getElementById('setup-error').textContent = `Saved token failed: ${e.message}`;
+    }
+  }
+});
+</script>
+</body>
+</html>

@@ -5,80 +5,84 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#0a0e17">
+<meta name="theme-color" content="#FDF6EE">
 <title>Sleep Coach</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&family=DM+Mono:wght@300;400&display=swap');
-  :root{--bg:#0a0e17;--surface:#131926;--surface-raised:#1a2235;--surface-bright:#222d42;--text:#e8ecf4;--text-dim:#8694ad;--text-faint:#4a5672;--green:#34d399;--green-dim:#065f46;--amber:#fbbf24;--amber-dim:#78350f;--red:#f87171;--red-dim:#7f1d1d;--blue:#60a5fa;--blue-dim:#1e3a5f;--purple:#a78bfa;--radius:16px;--radius-sm:10px}
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+  :root{--bg:#FDF6EE;--surface:#FFFCF7;--surface-raised:#FFF8F2;--surface-bright:#EDE4DA;--text:#2D2926;--text-dim:#6B5E57;--text-faint:#A69A93;--green:#4CA882;--green-dim:#E8F5EE;--amber:#F4A261;--amber-dim:#FFF3E0;--red:#F28B82;--red-dim:#FFF0EF;--blue:#5B9BBF;--blue-dim:#E5F0FA;--purple:#8B6FC0;--purple-dim:#EDE7F6;--rose:#D4738A;--rose-dim:#FCE4EC;--radius:20px;--radius-sm:14px}
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-  #setup-screen{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+  body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+  #setup-screen{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:linear-gradient(160deg,#FDF6EE 0%,#FDDCBD 50%,#B8D8E8 100%)}
   #setup-screen h1{font-size:28px;font-weight:700;margin-bottom:8px;letter-spacing:-0.5px}
   #setup-screen p{color:var(--text-dim);margin-bottom:32px;font-size:15px}
-  .setup-form{width:100%;max-width:400px;display:flex;flex-direction:column;gap:16px}
+  .setup-form{width:100%;max-width:400px;display:flex;flex-direction:column;gap:16px;background:var(--surface);padding:24px;border-radius:var(--radius);box-shadow:0 4px 20px rgba(0,0,0,0.06)}
   .setup-form label{font-size:13px;font-weight:500;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:-8px}
-  .setup-form input{background:var(--surface);border:1px solid var(--surface-bright);border-radius:var(--radius-sm);padding:14px 16px;color:var(--text);font-family:'DM Mono',monospace;font-size:15px;outline:none;transition:border-color 0.2s}
+  .setup-form input{background:var(--surface-raised);border:1px solid var(--surface-bright);border-radius:var(--radius-sm);padding:14px 16px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:15px;outline:none;transition:border-color 0.2s}
   .setup-form input:focus{border-color:var(--blue)}.setup-form input::placeholder{color:var(--text-faint)}
   .setup-hint{font-size:12px;color:var(--text-faint);margin-top:-10px;line-height:1.4}
-  .btn{background:var(--blue);color:var(--bg);border:none;border-radius:var(--radius-sm);padding:14px 24px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.15s;letter-spacing:-0.2px}
+  .btn{background:var(--blue);color:#fff;border:none;border-radius:14px;padding:14px 24px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.15s;letter-spacing:-0.2px}
   .btn:active{transform:scale(0.97);opacity:0.9}.btn-large{padding:18px 32px;font-size:18px;border-radius:var(--radius)}
   .btn-secondary{background:var(--surface-bright);color:var(--text)}.error-text{color:var(--red);font-size:14px;text-align:center;min-height:20px}
   #dashboard{display:none;min-height:100dvh;padding:16px 16px 100px;max-width:500px;margin:0 auto}
   .header{display:flex;justify-content:space-between;align-items:center;padding:8px 0 20px}
   .header h2{font-size:20px;font-weight:600;letter-spacing:-0.3px}
-  .header-time{font-family:'DM Mono',monospace;font-size:14px;color:var(--text-dim)}
+  .header-time{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--text-dim)}
   .settings-btn{background:var(--surface);border:none;color:var(--text-dim);width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center}
-  .wake-hero{background:var(--surface);border-radius:var(--radius);padding:28px 24px;margin-bottom:16px;position:relative;overflow:hidden}
-  .wake-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--green);transition:background 0.5s}
+  .wake-hero{background:var(--surface);border-radius:var(--radius);padding:28px 24px;margin-bottom:16px;position:relative;overflow:hidden;border:2px solid var(--surface-bright)}
+  .wake-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--green);transition:background 0.5s}
   .wake-hero.amber::before{background:var(--amber)}.wake-hero.red::before{background:var(--red)}
   .wake-label{font-size:13px;font-weight:500;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
-  .wake-time{font-family:'DM Mono',monospace;font-size:52px;font-weight:400;letter-spacing:-2px;line-height:1;margin-bottom:12px;transition:color 0.5s}
+  .wake-time{font-family:'JetBrains Mono',monospace;font-size:52px;font-weight:400;letter-spacing:-2px;line-height:1;margin-bottom:12px;transition:color 0.5s}
   .wake-hero.amber .wake-time{color:var(--amber)}.wake-hero.red .wake-time{color:var(--red)}
   .wake-bar-track{width:100%;height:6px;background:var(--surface-bright);border-radius:3px;overflow:hidden;margin-bottom:10px}
   .wake-bar-fill{height:100%;background:var(--green);border-radius:3px;transition:width 1s linear,background 0.5s}
   .wake-hero.amber .wake-bar-fill{background:var(--amber)}.wake-hero.red .wake-bar-fill{background:var(--red)}
   .wake-target{font-size:13px;color:var(--text-dim)}.wake-target strong{color:var(--text);font-weight:500}
   .status-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
-  .status-card{background:var(--surface);border-radius:var(--radius-sm);padding:16px}
+  .status-card{background:var(--surface);border-radius:var(--radius-sm);padding:16px;border:2px solid var(--surface-bright)}
   .status-card .label{font-size:12px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px}
-  .status-card .value{font-family:'DM Mono',monospace;font-size:22px}
+  .status-card .value{font-family:'JetBrains Mono',monospace;font-size:22px}
   .status-card .sub{font-size:12px;color:var(--text-dim);margin-top:4px}
-  .guidance{background:var(--surface);border-radius:var(--radius);padding:20px;margin-bottom:16px;border-left:3px solid var(--blue)}
-  .guidance.urgent{border-left-color:var(--red);background:linear-gradient(135deg,var(--red-dim),var(--surface))}
-  .guidance.warning{border-left-color:var(--amber);background:linear-gradient(135deg,var(--amber-dim),var(--surface))}
-  .guidance.positive{border-left-color:var(--green);background:linear-gradient(135deg,var(--green-dim),var(--surface))}
+  .guidance{border-radius:var(--radius);padding:20px;margin-bottom:16px;border-left:4px solid var(--blue);background:var(--blue-dim)}
+  .guidance.urgent{border-left-color:var(--red);background:var(--red-dim)}
+  .guidance.warning{border-left-color:var(--amber);background:var(--amber-dim)}
+  .guidance.positive{border-left-color:var(--green);background:var(--green-dim)}
   .guidance-title{font-size:15px;font-weight:600;margin-bottom:8px}
   .guidance-text{font-size:14px;line-height:1.6;color:var(--text-dim)}.guidance-text strong{color:var(--text);font-weight:500}
   .temperament-section{margin-bottom:16px}
   .section-title{font-size:13px;font-weight:500;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px}
   .temperament-options{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .temp-btn{background:var(--surface);border:1px solid var(--surface-bright);border-radius:var(--radius-sm);padding:14px 12px;color:var(--text-dim);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.15s;text-align:center}
+  .temp-btn{background:var(--surface);border:1px solid var(--surface-bright);border-radius:var(--radius-sm);padding:14px 12px;color:var(--text-dim);font-family:'Nunito',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.15s;text-align:center}
   .temp-btn:active{transform:scale(0.97)}
   .temp-btn.selected{border-color:var(--blue);color:var(--text);background:var(--blue-dim)}
+  .temp-btn.selected.temp-calm{border-color:var(--green);background:#E8F5E9;color:var(--green)}
+  .temp-btn.selected.temp-drowsy{border-color:var(--purple);background:#EDE7F6;color:var(--purple)}
+  .temp-btn.selected.temp-fighting{border-color:var(--amber);background:#FFF3E0;color:var(--amber)}
+  .temp-btn.selected.temp-inconsolable{border-color:var(--rose);background:#FCE4EC;color:var(--rose)}
   .temp-btn .emoji{display:block;font-size:24px;margin-bottom:4px}
   .timeline-section{margin-bottom:16px}.timeline{display:flex;flex-direction:column;gap:6px}
-  .timeline-item{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface);border-radius:var(--radius-sm);font-size:14px}
-  .timeline-item .time{font-family:'DM Mono',monospace;font-size:13px;color:var(--text-dim);min-width:48px}
+  .timeline-item{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface);border-radius:var(--radius-sm);font-size:14px;border:2px solid var(--surface-bright)}
+  .timeline-item .time{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text-dim);min-width:48px}
   .timeline-item .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
   .dot-sleep{background:var(--purple)}.dot-feed{background:var(--blue)}
   .timeline-item .desc{flex:1;color:var(--text-dim)}
-  .timeline-item .dur{font-family:'DM Mono',monospace;font-size:12px;color:var(--text-faint)}
-  .daily-stats{background:var(--surface);border-radius:var(--radius);padding:16px 20px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;text-align:center}
-  .daily-stat .val{font-family:'DM Mono',monospace;font-size:20px}
+  .timeline-item .dur{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-faint)}
+  .daily-stats{background:var(--surface);border-radius:var(--radius);padding:16px 20px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;text-align:center;border:2px solid var(--surface-bright)}
+  .daily-stat .val{font-family:'JetBrains Mono',monospace;font-size:20px}
   .daily-stat .lbl{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.3px;margin-top:2px}
   .bottom-bar{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--surface-bright);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0));display:flex;justify-content:center;gap:10px;z-index:100}
-  .bottom-bar .btn{flex:1;max-width:180px;padding:12px 16px;font-size:15px}.btn-chat{background:var(--purple)}
+  .bottom-bar .btn{flex:1;max-width:180px;padding:12px 16px;font-size:15px}.btn-chat{background:var(--purple);color:#fff}
   .last-refresh{font-size:11px;color:var(--text-faint);text-align:center;margin-top:4px}
   .loading{display:flex;align-items:center;justify-content:center;gap:8px;padding:40px;color:var(--text-dim)}
   .spinner{width:20px;height:20px;border:2px solid var(--surface-bright);border-top-color:var(--blue);border-radius:50%;animation:spin 0.8s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
-  .asleep-overlay{display:none;position:fixed;inset:0;background:rgba(5,8,15,0.97);z-index:200;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center}
+  .asleep-overlay{display:none;position:fixed;inset:0;background:linear-gradient(135deg,#3D3270,#2A1F5E);z-index:200;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;color:#fff}
   .asleep-overlay.show{display:flex}
   .asleep-overlay .moon{font-size:64px;margin-bottom:20px;animation:float 3s ease-in-out infinite}
   @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
   .asleep-overlay h2{font-size:24px;font-weight:600;margin-bottom:8px}
-  .asleep-overlay .asleep-dur{font-family:'DM Mono',monospace;font-size:40px;color:var(--purple);margin:16px 0}
-  .asleep-overlay p{color:var(--text-dim);font-size:15px;line-height:1.5;max-width:300px}
+  .asleep-overlay .asleep-dur{font-family:'JetBrains Mono',monospace;font-size:40px;color:var(--purple-dim);margin:16px 0}
+  .asleep-overlay p{color:rgba(255,255,255,0.75);font-size:15px;line-height:1.5;max-width:300px}
   .asleep-overlay .btn{margin-top:24px}
   .chat-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;opacity:0;transition:opacity 0.3s}
   .chat-backdrop.show{display:block;opacity:1}
@@ -97,10 +101,31 @@
   .chat-msg.system{align-self:center;background:none;color:var(--text-faint);font-size:12px;text-align:center;padding:4px}
   .chat-typing{align-self:flex-start;padding:12px 20px;color:var(--text-faint);font-size:13px;font-style:italic}
   .chat-input-row{display:flex;gap:8px;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0));border-top:1px solid var(--surface-bright);background:var(--surface)}
-  .chat-input{flex:1;background:var(--surface-bright);border:none;border-radius:20px;padding:12px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;outline:none;resize:none;max-height:100px}
+  .chat-input{flex:1;background:var(--surface-bright);border:none;border-radius:20px;padding:12px 16px;color:var(--text);font-family:'Nunito',sans-serif;font-size:15px;outline:none;resize:none;max-height:100px}
   .chat-input::placeholder{color:var(--text-faint)}
   .chat-send{background:var(--purple);border:none;border-radius:50%;width:44px;height:44px;color:white;font-size:20px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:opacity 0.15s}
   .chat-send:disabled{opacity:0.3;cursor:default}
+  .sleep-toggle{border-radius:var(--radius);padding:20px;margin-bottom:16px;text-align:center;border:2px solid var(--surface-bright)}
+  .sleep-toggle.awake{background:var(--surface)}
+  .sleep-toggle.asleep{background:linear-gradient(135deg,#EDE7F6,#F3E5F5);border-color:var(--purple)}
+  .sleep-toggle .toggle-icon{font-size:32px;margin-bottom:8px}
+  .sleep-toggle .toggle-label{font-size:16px;font-weight:600;margin-bottom:4px}
+  .sleep-toggle .toggle-sub{font-size:13px;color:var(--text-dim);margin-bottom:12px}
+  .sleep-toggle .nap-timer{font-family:'JetBrains Mono',monospace;font-size:36px;color:var(--purple);margin:12px 0}
+  .sleep-toggle .ideal-wake{background:var(--purple-dim);padding:8px 14px;border-radius:var(--radius-sm);font-size:13px;color:var(--purple);margin-bottom:12px;display:inline-block}
+  .btn-sleep{background:var(--purple);color:white}
+  .btn-wake{background:var(--amber);color:white}
+  .forecast-section{margin-bottom:16px}
+  .forecast-list{display:flex;flex-direction:column;gap:0;padding-left:4px}
+  .forecast-item{display:flex;align-items:center;gap:12px;padding:8px 14px;border-left:2px dashed var(--surface-bright);margin-left:3px}
+  .fc-time{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text-dim);min-width:48px}
+  .fc-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+  .fc-dot-sleep{background:var(--purple-dim);border:2px solid var(--purple)}
+  .fc-dot-wake{background:var(--amber-dim);border:2px solid var(--amber)}
+  .fc-dot-bed{background:var(--purple);border:2px solid var(--purple)}
+  .fc-dot-feed{background:var(--blue-dim);border:2px solid var(--blue)}
+  .fc-label{flex:1;color:var(--text-dim);font-weight:600;font-size:14px}
+  .forecast-note{font-size:11px;color:var(--text-faint);font-style:italic;margin-top:8px}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--surface-bright);border-radius:2px}
 </style>
 </head>
@@ -120,8 +145,9 @@
 </div>
 <div id="dashboard">
   <div class="header"><h2>Sleep Coach</h2><div style="display:flex;align-items:center;gap:10px"><span class="header-time" id="clock"></span><button class="settings-btn" onclick="showSetup()">⚙</button></div></div>
+  <div id="sleep-toggle-container"></div>
   <div id="wake-hero-container"></div><div id="status-cards-container"></div><div id="temperament-container"></div>
-  <div id="guidance-container"></div><div id="daily-stats-container"></div><div id="timeline-container"></div><div id="last-refresh-container"></div>
+  <div id="guidance-container"></div><div id="forecast-container"></div><div id="daily-stats-container"></div><div id="timeline-container"></div><div id="last-refresh-container"></div>
   <div class="bottom-bar"><button class="btn btn-secondary" onclick="refreshData()">↻ Refresh</button><button class="btn btn-chat" id="chat-btn" onclick="openChat()" style="display:none">💬 Ask coach</button></div>
 </div>
 <div class="asleep-overlay" id="asleep-overlay"><div class="moon">🌙</div><h2>He's asleep</h2><div class="asleep-dur" id="asleep-duration">00:00</div><p id="asleep-message"></p><button class="btn btn-secondary" onclick="dismissOverlay()">View dashboard</button></div>
@@ -134,14 +160,16 @@
 </div>
 <script>
 const P={WF:70,WD:85,WE:90,WM:100,AP:0.75,RP:0.90,EH:16,BL:20,NPS:14,NPE:17,FI:150};
-let S={url:'',token:'',ck:'',sleeps:[],feeds:[],temp:null,od:false,lr:null,ch:[],cl:false};
-function sC(){try{localStorage.setItem('sc4',JSON.stringify({u:S.url,t:S.token,c:S.ck}))}catch(e){}}
-function lC(){try{const r=localStorage.getItem('sc4');if(r){const c=JSON.parse(r);S.url=c.u||'';S.token=c.t||'';S.ck=c.c||'';return !!(S.url&&S.token)}}catch(e){}return false}
+let S={url:'',token:'',ck:'',sleeps:[],feeds:[],temp:null,od:false,lr:null,ch:[],cl:false,ms:null};
+function sC(){try{localStorage.setItem('sc4',JSON.stringify({u:S.url,t:S.token,c:S.ck,ms:S.ms?S.ms.start.getTime():null}))}catch(e){}}
+function lC(){try{const r=localStorage.getItem('sc4');if(r){const c=JSON.parse(r);S.url=c.u||'';S.token=c.t||'';S.ck=c.c||'';if(c.ms)S.ms={start:new Date(c.ms)};return !!(S.url&&S.token)}}catch(e){}return false}
 async function aF(p,q={}){const b=S.url.replace(/\/+$/,''),u=new URL(p,b);Object.entries(q).forEach(([k,v])=>u.searchParams.set(k,v));const r=await fetch(u.toString(),{headers:{'Authorization':`Token ${S.token}`,'Accept':'application/json'}});if(!r.ok){if(r.status===403||r.status===401)throw new Error('Invalid API token');throw new Error(`API ${r.status}`)}return r.json()}
-async function fD(){const[sd,fd]=await Promise.all([aF('/api/sleep/',{limit:30,offset:0,ordering:'-start'}),aF('/api/feedings/',{limit:30,offset:0,ordering:'-start'})]);S.sleeps=(sd.results||sd).map(s=>{const a=new Date(s.start),b=new Date(s.end);return{start:a,end:b,dur:(b-a)/60000,nap:s.nap===true||s.nap==='1'||s.nap===1,notes:s.notes||''}}).sort((a,b)=>b.start-a.start);S.feeds=(fd.results||fd).map(f=>{const a=new Date(f.start),b=new Date(f.end);return{start:a,end:b,dur:(b-a)/60000,type:f.type||'',method:f.method||'',amount:f.amount?parseFloat(f.amount):null,notes:f.notes||''}}).sort((a,b)=>b.start-a.start);S.lr=new Date()}
+async function fD(){const[sd,fd]=await Promise.all([aF('/api/sleep/',{limit:30,offset:0,ordering:'-start'}),aF('/api/feedings/',{limit:30,offset:0,ordering:'-start'})]);S.sleeps=(sd.results||sd).map(s=>{const a=new Date(s.start),b=new Date(s.end);return{start:a,end:b,dur:(b-a)/60000,nap:s.nap===true||s.nap==='1'||s.nap===1,notes:s.notes||''}}).sort((a,b)=>b.start-a.start);S.feeds=(fd.results||fd).map(f=>{const a=new Date(f.start),b=new Date(f.end);return{start:a,end:b,dur:(b-a)/60000,type:f.type||'',method:f.method||'',amount:f.amount?parseFloat(f.amount):null,notes:f.notes||''}}).sort((a,b)=>b.start-a.start);S.lr=new Date();if(S.ms){const m=S.sleeps.find(s=>(s.end-s.start)>60000&&Math.abs(s.start-S.ms.start)<300000);if(m){S.ms=null;sC()}}}
 function g6(n){const d=new Date(n);d.setHours(6,0,0,0);if(n.getHours()<6)d.setDate(d.getDate()-1);return d}
-function gS(){const n=new Date(),h=n.getHours(),ls=S.sleeps[0];let sl=false,ss=null;if(ls){const d=ls.end-ls.start;if(d<60000&&(n-ls.start)<8*3600000&&(n-ls.start)>60000){sl=true;ss=ls.start}}let wm=0,le=null;if(!sl){const c=S.sleeps.filter(s=>(s.end-s.start)>60000);if(c[0]){le=c[0].end;wm=(n-c[0].end)/60000}}const lf=S.feeds[0];let fm=lf?Math.max(0,(n-lf.end)/60000):999;const t6=g6(n),ts=S.sleeps.filter(s=>s.end>t6&&(s.end-s.start)>60000),tn=ts.filter(s=>s.nap),nm=tn.reduce((a,x)=>a+x.dur,0),nc=tn.length,fc=S.feeds.filter(f=>f.start>t6).length,ie=h>=P.EH,ifn=nc===0&&!sl;let tw=ifn&&h<12?P.WF:ie?P.WE:P.WD;const wp=Math.min(wm/tw,1.5),ws=wp>=P.RP?'red':wp>=P.AP?'amber':'green';const ft=S.feeds.filter(f=>f.start>t6&&f.type.toLowerCase().includes('formula'));return{n,h,sl,ss,wm,le,fm,lf,ls,nm,nc,fc,ie,ifn,tw,wp,ws,ft,ts}}
-function gG(c){const g=[],h=c.h,t=S.temp;if(c.sl)return g;
+function gS(){const n=new Date(),h=n.getHours(),ls=S.sleeps[0];let sl=false,ss=null;if(ls){const d=ls.end-ls.start;if(d<60000&&(n-ls.start)<8*3600000&&(n-ls.start)>60000){sl=true;ss=ls.start}}let wm=0,le=null;if(!sl){const c=S.sleeps.filter(s=>(s.end-s.start)>60000);if(c[0]){le=c[0].end;wm=(n-c[0].end)/60000}}if(S.ms){sl=true;ss=S.ms.start;wm=0}const lf=S.feeds[0];let fm=lf?Math.max(0,(n-lf.end)/60000):999;const t6=g6(n),ts=S.sleeps.filter(s=>s.end>t6&&(s.end-s.start)>60000),tn=ts.filter(s=>s.nap),nm=tn.reduce((a,x)=>a+x.dur,0),nc=tn.length,fc=S.feeds.filter(f=>f.start>t6).length,ie=h>=P.EH,ifn=nc===0&&!sl;let tw=ifn&&h<12?P.WF:ie?P.WE:P.WD;const wp=Math.min(wm/tw,1.5),ws=wp>=P.RP?'red':wp>=P.AP?'amber':'green';const ft=S.feeds.filter(f=>f.start>t6&&f.type.toLowerCase().includes('formula'));return{n,h,sl,ss,wm,le,fm,lf,ls,nm,nc,fc,ie,ifn,tw,wp,ws,ft,ts}}
+function iWT(s){const n=new Date(),h=n.getHours();let dur;if(h>=14&&h<17)dur=60;else if(h<12)dur=50;else if(h>=17)dur=30;else dur=45;if(h>=15){const lE=new Date(n);lE.setHours(18,30,0,0);const maxR=Math.max(0,(lE-n)/60000),el=(n-s)/60000;dur=Math.min(dur,el+maxR)}return new Date(s.getTime()+dur*60000)}
+function tMS(){if(S.ms){S.ms=null}else{S.ms={start:new Date()};S.temp=null}sC();render()}
+function gG(c){const g=[],h=c.h,t=S.temp;if(c.sl){if(S.ms){const iw=iWT(S.ms.start);g.push({t:'positive',ti:'😴 Sleeping',tx:`Since <strong>${fT(S.ms.start)}</strong>. Ideal wake: <strong>${fT(iw)}</strong>.`})}return g}
 if(c.ws==='red')g.push({t:'urgent',ti:'⚠ Wake window critical',tx:`Awake <strong>${fM(c.wm)}</strong> — past ${fM(c.tw)}. `+(c.ie?'<strong>Start bedtime routine NOW.</strong>':'<strong>Sleep by any means.</strong>')});
 else if(c.ws==='amber'){const l=Math.max(0,Math.round(c.tw-c.wm));g.push({t:'warning',ti:'⏱ Window closing',tx:`<strong>${l} mins left</strong>. `+(c.ie?'Start bedtime routine.':c.ifn?'Try <strong>crib first</strong>.':'Start settling.')})}
 if(t==='refusing')g.push({t:'warning',ti:'🔄 Fighting sleep',tx:c.wm>80?'<strong>20-min rule:</strong> try 20 mins, break 10–15, fresh parent.':'May not be tired enough yet.'});
@@ -154,19 +182,28 @@ if(h>=17&&c.wm>60&&c.le){const bt=new Date(c.le.getTime()+P.WE*60000);g.push({t:
 if(h>=18&&c.ft.length===0&&!g.some(x=>x.tx.includes('Formula')))g.push({t:'warning',ti:'🍼 Formula reminder',tx:'Save bottle (150–180ml) for <strong>last feed before bed</strong>.'})}
 if(h>=14&&c.nm<120&&!c.sl&&!t)g.push({t:'warning',ti:'📊 Low naps',tx:`<strong>${fM(c.nm)}</strong> nap sleep (target 3–4h).`});
 if(g.length===0)g.push({t:'positive',ti:'✓ On track',tx:`${fM(c.wm)} of ${fM(c.tw)}.`});return g}
-
+function bF(c){const evs=[],now=c.n;let cursor;if(c.sl&&c.ss){const iw=iWT(c.ss);if(iw>now){evs.push({time:iw,label:'Wake from nap',type:'wake'});cursor=iw}else{cursor=now}}else{cursor=now}
+const getWW=(d)=>{const h=d.getHours();if(c.nc===0&&h<12)return 70;if(h>=16)return 90;return 85};
+let napIdx=c.nc,isAwake=c.sl?true:true;
+for(let i=evs.length;i<8;i++){if(cursor.getHours()>=20)break;if(isAwake){const ww=getWW(cursor),ns=new Date(cursor.getTime()+ww*60000);if(ns.getHours()>=19){evs.push({time:ns,label:'Bedtime routine',type:'bed'});break}evs.push({time:ns,label:`Nap ${napIdx+1} start`,type:'sleep'});const nh=ns.getHours();let nd=45;if(nh>=14&&nh<17)nd=60;else if(nh<12)nd=50;else if(nh>=17)nd=25;if(nh>=15){const lE=new Date(ns);lE.setHours(18,30,0,0);nd=Math.min(nd,(lE-ns)/60000)}if(nd>5){const ne=new Date(ns.getTime()+nd*60000);evs.push({time:ne,label:`Nap ${napIdx+1} end`,type:'wake'});cursor=ne;napIdx++}else{cursor=ns}isAwake=false}else{isAwake=true}}
+if(!evs.some(e=>e.type==='bed')&&cursor.getHours()<20){const bt=new Date(cursor.getTime()+90*60000);if(bt.getHours()>=17&&bt.getHours()<=21)evs.push({time:bt,label:'Bedtime routine',type:'bed'})}
+if(c.ft.length===0){const be=evs.find(e=>e.type==='bed');if(be)evs.push({time:new Date(be.time.getTime()-5*60000),label:'Formula top-up (150–180ml)',type:'feed'})}
+return evs.filter(e=>e.time>now).sort((a,b)=>a.time-b.time)}
 function uH(id,h){const e=document.getElementById(id);if(e._l!==h){e.innerHTML=h;e._l=h}}
 function render(){const c=gS();document.getElementById('clock').textContent=fT(c.n);
-const ov=document.getElementById('asleep-overlay');if(c.sl&&!S.od){ov.classList.add('show');document.getElementById('asleep-duration').textContent=fC((c.n-c.ss)/60000);document.getElementById('asleep-message').textContent=c.h>=6&&c.h<19?`Nap started ${fT(c.ss)}. Let him sleep.`:`Night sleep since ${fT(c.ss)}. Rest.`;return}ov.classList.remove('show');if(!c.sl)S.od=false;
+const ov=document.getElementById('asleep-overlay');if(c.sl&&!S.ms&&!S.od){ov.classList.add('show');document.getElementById('asleep-duration').textContent=fC((c.n-c.ss)/60000);document.getElementById('asleep-message').textContent=c.h>=6&&c.h<19?`Nap started ${fT(c.ss)}. Let him sleep.`:`Night sleep since ${fT(c.ss)}. Rest.`;return}ov.classList.remove('show');if(!c.sl)S.od=false;
 const g=gG(c);
-if(!c.sl){const p=Math.min(c.wp*100,100);uH('wake-hero-container',`<div class="wake-hero ${c.ws}"><div class="wake-label">Awake for</div><div class="wake-time">${fC(c.wm)}</div><div class="wake-bar-track"><div class="wake-bar-fill" style="width:${p}%"></div></div><div class="wake-target">Target: <strong>${fM(c.tw)}</strong>${c.ifn?' (first nap)':c.ie?' (evening)':''}</div></div>`)}else uH('wake-hero-container','');
+if(S.ms){uH('sleep-toggle-container',`<div class="sleep-toggle asleep"><div class="toggle-icon">🌙</div><div class="toggle-label">${c.h>=6&&c.h<19?'Nap':'Night sleep'} in progress</div><div class="toggle-sub">Started at ${fT(S.ms.start)}</div><div class="nap-timer" id="ms-timer">--:--</div><div class="ideal-wake">Ideal wake: ${fT(iWT(S.ms.start))}</div><button class="btn btn-wake" onclick="tMS()">☀️ He's awake now</button></div>`);uH('wake-hero-container','');uH('temperament-container','')}else{uH('sleep-toggle-container',`<div class="sleep-toggle awake"><div class="toggle-icon">☀️</div><div class="toggle-label">He's awake</div><div class="toggle-sub">Tap when he falls asleep</div><button class="btn btn-sleep" onclick="tMS()">🌙 Asleep</button></div>`);if(!c.sl){const p=Math.min(c.wp*100,100);uH('wake-hero-container',`<div class="wake-hero ${c.ws}"><div class="wake-label">Awake for</div><div class="wake-time">--:--</div><div class="wake-bar-track"><div class="wake-bar-fill" style="width:${p}%"></div></div><div class="wake-target">Target: <strong>${fM(c.tw)}</strong>${c.ifn?' (first nap)':c.ie?' (evening)':''}</div></div>`)}else uH('wake-hero-container','');
+uH('temperament-container',`<div class="temperament-section"><div class="section-title">How is he right now?</div><div class="temperament-options"><button class="temp-btn temp-calm ${S.temp==='calm'?'selected':''}" onclick="setTemp('calm')"><span class="emoji">😊</span>Calm</button><button class="temp-btn temp-drowsy ${S.temp==='drowsy'?'selected':''}" onclick="setTemp('drowsy')"><span class="emoji">😴</span>Drowsy</button><button class="temp-btn temp-fighting ${S.temp==='refusing'?'selected':''}" onclick="setTemp('refusing')"><span class="emoji">😤</span>Fighting sleep</button><button class="temp-btn temp-inconsolable ${S.temp==='inconsolable'?'selected':''}" onclick="setTemp('inconsolable')"><span class="emoji">😭</span>Inconsolable</button></div></div>`)}
 uH('status-cards-container',`<div class="status-row"><div class="status-card"><div class="label">Last feed</div><div class="value">${c.lf?fM(c.fm):'--'}</div><div class="sub">${c.lf?c.lf.type+(c.lf.amount?' · '+c.lf.amount+'ml':''):'No data'}</div></div><div class="status-card"><div class="label">Last sleep</div><div class="value">${c.ls&&c.ls.dur>1?fM(c.ls.dur):'--'}</div><div class="sub">${c.ls?(c.ls.nap?'Nap':'Night')+(c.ls.notes?' · '+tr(c.ls.notes,20):''):''}</div></div></div>`);
-uH('temperament-container',`<div class="temperament-section"><div class="section-title">How is he right now?</div><div class="temperament-options"><button class="temp-btn ${S.temp==='calm'?'selected':''}" onclick="setTemp('calm')"><span class="emoji">😊</span>Calm</button><button class="temp-btn ${S.temp==='drowsy'?'selected':''}" onclick="setTemp('drowsy')"><span class="emoji">😴</span>Drowsy</button><button class="temp-btn ${S.temp==='refusing'?'selected':''}" onclick="setTemp('refusing')"><span class="emoji">😤</span>Fighting sleep</button><button class="temp-btn ${S.temp==='inconsolable'?'selected':''}" onclick="setTemp('inconsolable')"><span class="emoji">😭</span>Inconsolable</button></div></div>`);
 uH('guidance-container',g.map(i=>`<div class="guidance ${i.t}"><div class="guidance-title">${i.ti}</div><div class="guidance-text">${i.tx}</div></div>`).join(''));
+const fc=bF(c);uH('forecast-container',fc.length&&!c.sl?`<div class="forecast-section"><div class="section-title">Schedule forecast</div><div class="forecast-list">${fc.map(f=>`<div class="forecast-item"><span class="fc-time">${fT(f.time)}</span><span class="fc-dot fc-dot-${f.type}"></span><span class="fc-label">${f.label}</span></div>`).join('')}</div><div class="forecast-note">Times are estimates based on the plan. Follow his cues.</div></div>`:'');
 uH('daily-stats-container',`<div class="daily-stats"><div class="daily-stat"><div class="val">${c.nc}</div><div class="lbl">Naps</div></div><div class="daily-stat"><div class="val">${fMS(c.nm)}</div><div class="lbl">Nap total</div></div><div class="daily-stat"><div class="val">${c.fc}</div><div class="lbl">Feeds</div></div></div>`);
 const t6=g6(c.n),ev=[];S.sleeps.filter(s=>s.end>t6&&s.dur>1).forEach(s=>ev.push({time:s.start,tp:'sleep',desc:(s.nap?'Nap':'Night')+(s.notes?' — '+tr(s.notes,25):''),dur:fM(s.dur)}));S.feeds.filter(f=>f.start>t6).forEach(f=>ev.push({time:f.start,tp:'feed',desc:(f.type||'Feed')+(f.amount?' · '+f.amount+'ml':''),dur:f.dur>1?fM(f.dur):''}));ev.sort((a,b)=>b.time-a.time);
 uH('timeline-container',ev.length?`<div class="timeline-section"><div class="section-title">Today</div><div class="timeline">${ev.slice(0,15).map(e=>`<div class="timeline-item"><span class="time">${fT(e.time)}</span><span class="dot dot-${e.tp}"></span><span class="desc">${e.desc}</span><span class="dur">${e.dur}</span></div>`).join('')}</div></div>`:'');
-uH('last-refresh-container',S.lr?`<div class="last-refresh">Refreshed ${fT(S.lr)}</div>`:'')}
+uH('last-refresh-container',S.lr?`<div class="last-refresh">Refreshed ${fT(S.lr)}</div>`:'');
+const mst=document.getElementById('ms-timer');if(mst&&S.ms)mst.textContent=fC((c.n-S.ms.start)/60000);
+const wt=document.querySelector('.wake-time');if(wt)wt.textContent=fC(c.wm)}
 function fM(m){m=Math.max(0,m);const h=Math.floor(m/60),n=Math.round(m%60);return h>0?h+'h '+n+'m':n+'m'}
 function fMS(m){const h=Math.floor(m/60),n=Math.round(m%60);return h>0?h+'h'+(n>0?n:''):n+'m'}
 function fC(m){m=Math.max(0,m);const h=Math.floor(m/60),n=Math.floor(m%60),s=Math.floor((m*60)%60);return h>0?h+':'+String(n).padStart(2,'0')+':'+String(s).padStart(2,'0'):n+':'+String(s).padStart(2,'0')}
@@ -177,10 +214,10 @@ function dismissOverlay(){S.od=true;render()}
 async function refreshData(){try{await fD();render()}catch(e){uH('guidance-container',`<div class="guidance urgent"><div class="guidance-title">⚠ Refresh failed</div><div class="guidance-text">${e.message}</div></div>`)}}
 async function connectAPI(){const u=document.getElementById('input-url').value.trim().replace(/\/+$/,''),t=document.getElementById('input-token').value.trim().replace(/^Token\s*/i,''),c=document.getElementById('input-claude').value.trim(),e=document.getElementById('setup-error');if(!u||!t){e.textContent='URL and token required.';return}e.textContent='Connecting…';S.url=u;S.token=t;S.ck=c;try{await aF('/api/sleep/',{limit:1});sC();e.textContent='';document.getElementById('setup-screen').style.display='none';document.getElementById('dashboard').style.display='block';if(S.ck)document.getElementById('chat-btn').style.display='';await refreshData();startTicking()}catch(x){e.textContent='Connection failed: '+x.message}}
 function showSetup(){document.getElementById('dashboard').style.display='none';document.getElementById('setup-screen').style.display='flex';document.getElementById('input-url').value=S.url;document.getElementById('input-token').value=S.token;document.getElementById('input-claude').value=S.ck}
-function startTicking(){setInterval(()=>render(),15000);setInterval(()=>refreshData(),300000)}
+function startTicking(){setInterval(()=>render(),5000);setInterval(()=>refreshData(),300000)}
 function openChat(){document.getElementById('chat-backdrop').classList.add('show');document.getElementById('chat-sheet').classList.add('show');document.getElementById('chat-input').focus()}
 function closeChat(){document.getElementById('chat-backdrop').classList.remove('show');document.getElementById('chat-sheet').classList.remove('show')}
-function bSnap(){const c=gS(),t6=g6(c.n),ts=S.sleeps.filter(s=>s.end>t6&&s.dur>1),tf=S.feeds.filter(f=>f.start>t6);return`TIME:${c.n.toLocaleString('en-GB')}\nAWAKE:${fM(c.wm)}(target ${fM(c.tw)},${c.ws})\nLAST SLEEP:${c.ls?fM(c.ls.dur)+' '+(c.ls.nap?'nap':'night')+' ended '+fT(c.ls.end)+(c.ls.notes?' ('+c.ls.notes+')':''):'?'}\nLAST FEED:${c.lf?fM(c.fm)+' ago,'+c.lf.type+(c.lf.amount?' '+c.lf.amount+'ml':''):'?'}\nSLEEPING:${c.sl?'yes since '+fT(c.ss):'no'}\nTEMP:${S.temp||'unset'}\nSLEEPS TODAY(${ts.length}):\n${ts.map(s=>' '+fT(s.start)+'-'+fT(s.end)+' '+fM(s.dur)+' '+(s.nap?'NAP':'NIGHT')+' '+s.notes).join('\n')}\nFEEDS TODAY(${tf.length}):\n${tf.map(f=>' '+fT(f.start)+' '+f.type+(f.amount?' '+f.amount+'ml':'')).join('\n')}\nTOTALS:${c.nc}naps(${fM(c.nm)}),${c.fc}feeds\nFORMULA:${c.ft.length?c.ft.map(f=>(f.amount||'?')+'ml '+fT(f.start)).join(','):'not yet'}`}
+function bSnap(){const c=gS(),t6=g6(c.n),ts=S.sleeps.filter(s=>s.end>t6&&s.dur>1),tf=S.feeds.filter(f=>f.start>t6);return`TIME:${c.n.toLocaleString('en-GB')}\nAWAKE:${fM(c.wm)}(target ${fM(c.tw)},${c.ws})\nLAST SLEEP:${c.ls?fM(c.ls.dur)+' '+(c.ls.nap?'nap':'night')+' ended '+fT(c.ls.end)+(c.ls.notes?' ('+c.ls.notes+')':''):'?'}\nLAST FEED:${c.lf?fM(c.fm)+' ago,'+c.lf.type+(c.lf.amount?' '+c.lf.amount+'ml':''):'?'}\nSLEEPING:${c.sl?'yes since '+fT(c.ss):'no'}\nTEMP:${S.temp||'unset'}\nSLEEPS TODAY(${ts.length}):\n${ts.map(s=>' '+fT(s.start)+'-'+fT(s.end)+' '+fM(s.dur)+' '+(s.nap?'NAP':'NIGHT')+' '+s.notes).join('\n')}\nFEEDS TODAY(${tf.length}):\n${tf.map(f=>' '+fT(f.start)+' '+f.type+(f.amount?' '+f.amount+'ml':'')).join('\n')}\nTOTALS:${c.nc}naps(${fM(c.nm)}),${c.fc}feeds\nFORMULA:${c.ft.length?c.ft.map(f=>(f.amount||'?')+'ml '+fT(f.start)).join(','):'not yet'}\nFORECAST:\n${bF(c).map(f=>fT(f.time)+' '+f.label).join('\n')}`}
 const SYS=`You are a warm, experienced infant sleep consultant advising parents of a 13-week-old boy (2nd percentile, healthy, gaining well). Majority breastfed + one formula bottle/day. You see live tracker data with each message.
 
 THE PLAN:
